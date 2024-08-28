@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-heading: 'Your Heading Font', sans-serif;
+    --font-body: 'Your Body Font', sans-serif;
+    --background: 0, 0, 0;
+    --white-background:0, 0%, 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 45%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.5rem;
+    --select-content-background-color: 222, 47%, 11%;
+    --side-background: 202.4, 51.1%, 44.1%;
+    --side-list-hover:215.6, 100%, 46.3%;
+
+    
+    
+  }
+
+
+  .dark {
+    --background: #1a1a1a; /* Dark mode background */
+    --foreground: #ffffff; /* Dark mode text */
+  }
+
+  
+  
+
+
+  
+  
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+  .select-item {
+    @apply px-4 py-2 cursor-pointer;
+  }
+  
+  .select-item:hover {
+    @apply bg-gray-200 dark:bg-gray-700;
+  }
+}

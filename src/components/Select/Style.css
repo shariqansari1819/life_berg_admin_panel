@@ -1,0 +1,20 @@
+.bg-background {
+    background-color: #ffffff; /* Light mode background */
+  }
+  
+  .bg-background-dark {
+    background-color: #1a1a1a; /* Dark mode background */
+  }
+  
+  .border-muted {
+    border-color: #d1d5db; /* Light mode muted border */
+  }
+  
+  .border-muted-dark {
+    border-color: #4b5563; /* Dark mode muted border */
+  }
+  
+  .dark\:bg-muted-dark {
+    background-color: #4b5563; /* Dark mode muted background */
+  }
+  
