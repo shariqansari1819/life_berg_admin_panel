@@ -38,6 +38,10 @@ import { ChevronDownIcon, ChevronUpIcon, SearchIcon, VerticalEllipsisIcon } from
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { NavLink } from 'react-router-dom';
 import { UserDetailsModal } from '../../components/user-detail-modal/UserDetails';
+import moment from 'moment';
+import { ArticlesModal } from '../../components/NewsArticleModal/ArticleModal';
+import { AddArticlesModal } from '../../components/AddArticleModal/AddArticleModal';
+import { EditArticlesModal } from '../../components/EditArticleModal/EditArticleModal';
 
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
@@ -47,7 +51,7 @@ const DropdownMenuItem = DropdownMenuPrimitive.Item;
 const DropdownMenuSeparator = DropdownMenuPrimitive.Separator;
 const DropdownMenuLabel = DropdownMenuPrimitive.Label;
 
-export function Users() {
+export function NewsArticles() {
   const queryClient = useQueryClient();
   const { darkMode } = useSelector((state) => state.darkMode);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -55,8 +59,14 @@ export function Users() {
   const [itemsPerPage, setItemsPerPage] = useState(5); // State for items per page
   const [deleteObject, setDeleteObject] = useState(null);
   const [alertOpen, setAlertOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [selectedEditArticle, setSelectedEditArticle] = useState(null);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+
 
 
   function isValidUrl(string) {
@@ -73,39 +83,65 @@ export function Users() {
     () => [
 
       {
-        id: 'userName',
-        header: 'USERNAME',
-        accessorKey: 'userName',
+        id: 'title',
+        header: 'POSTNAME',
+        accessorKey: 'title',
         cell: ({ row }) => {
           const profilePicture = row.original.profilePicture;
-
+          // console.log("profilePicture", profilePicture)
           const profilePictureUrl = profilePicture
             ? isValidUrl(profilePicture)
               ? profilePicture
-              : `https://life-berg.eu-4.evennode.com/uploads/images/${profilePicture}`
+              : `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${profilePicture}`
             : avatar;
           return (
             <div className="flex items-center gap-2">
               <img
                 src={profilePictureUrl}
-                alt={`${row.original.userName}'s profile`}
+                alt={`${row.original.title}'s profile`}
                 className="w-8 h-8 rounded-full object-cover"
               />
-              <span>{row.original.userName}</span>
+              <span>{row.original.title}</span>
             </div>
           );
         },
       },
+      // {
+      //   id: 'title',
+      //   header: 'Title',
+      //   accessorKey: 'title',
+      // },
       {
-        id: 'email',
-        header: 'Email',
-        accessorKey: 'email',
+        id: 'title',
+        header: 'Title',
+        accessorKey: 'title',
       },
       {
-        id: 'country',
-        header: 'Location',
-        accessorKey: 'country',
+        id: 'type',
+        header: 'Type',
+        accessorKey: 'type'
       },
+      {
+        id: 'readTime',
+        header: 'Read Time',
+        accessorKey: 'readTime'
+      },
+      {
+        id: 'subCategory',
+        header: 'Sub Category',
+        accessorKey: 'subCategory'
+      },
+      {
+        id: 'publishedTime',
+        header: 'Uploaded At',
+        accessorKey: 'publishedTime',
+        cell: ({ row }) => {
+
+          return (
+            moment(row.original.publishedTime).format('MMM D, YYYY')
+          );
+        },
+      }
       // {
       //   id:'profileStatus',
       //   header:"Profile Status",
@@ -117,7 +153,8 @@ export function Users() {
   );
 
   const handleView = (row) => {
-    setSelectedUser(row)
+    // console.log("row for view", row.original)
+    setSelectedArticle(row?.original)
     setIsModalOpen(true);
   };
 
@@ -131,20 +168,20 @@ export function Users() {
 
   const handleDelete = (row) => {
     console.log("row", row.original)
-    // setDeleteObject(row.original)
-    // setAlertOpen(!alertOpen)
+    setDeleteObject(row.original)
+    setAlertOpen(!alertOpen)
   };
 
-  const deleteVideoMutation = useMutation({
-    mutationFn: async (userId) => {
+  const deleteArticleMutation = useMutation({
+    mutationFn: async (articleId) => {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/user/delete-user`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/delete `, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ userId: userId }),
+        body: JSON.stringify({ id: articleId }),
       });
       if (!response.ok) {
         const errorData = await response.json();
@@ -203,13 +240,30 @@ export function Users() {
 
 
 
-  const handleProfileUpdate = (row, data) => {
-    const updateUserData = {
-      userId: row?._id,
-      "profileStatus": data
-    }
-    updateUserMutation.mutate(updateUserData);
+  const handleEditArticle = (row) => {
+    // console.log("data-------<<-->>", row)
+    setSelectedEditArticle(row);
+    setIsEditModalOpen(true)
+    // updateUserMutation.mutate(updateUserData);
   }
+
+
+  // const addNewArticle = (row, data) => {
+  //   const updateUserData = {
+  //     userId: row?._id,
+  //     "profileStatus": data
+  //   }
+  //   updateUserMutation.mutate(updateUserData);
+  // }
+
+
+  const handleAdd = (row) => {
+    // console.log("row for view", row.original)
+    // setSelectedArticle(row?.original)
+    setIsAddModalOpen(true);
+  };
+
+
 
   const handleSubUpdate = (row, data) => {
     const updateUserData = {
@@ -226,15 +280,15 @@ export function Users() {
 
   const deleteVideo = () => {
     if (deleteObject) {
-      deleteVideoMutation.mutate(deleteObject._id);
+      deleteArticleMutation.mutate(deleteObject._id);
     }
   }
 
   const { data, error, isLoading } = useQuery({
-    queryKey: ['userss', currentPage, itemsPerPage],
+    queryKey: ['articles', currentPage, itemsPerPage],
     queryFn: async () => {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/user/all?page=${currentPage}&limit=${itemsPerPage}`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/all?page=${currentPage}&limit=${itemsPerPage}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -243,36 +297,40 @@ export function Users() {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
+      console.log("reposne", response)
       return response.json();
     },
-    keepPreviousData: true,
+    // keepPreviousData: true,
 
   });
 
   const tableData = useMemo(() => {
+    console.log("data.success", data?.message?.newsArticles?.docs)
     if (data && data.success) {
-      return data?.message?.users?.docs.map(user => ({
-        _id: user._id,
-        userName: user?.userName,
-        email: user?.email,
-        country: user?.country,
-        createdAt: user?.createdAt,
-        dob: user?.dob,
-        currentStreak: user?.currentStreak,
+      return data?.message?.newsArticles?.docs.map(article => ({
+        _id: article._id,
+        title: article?.title,
+        description: article?.description,
+        type: article?.type,
+        readTime: article?.readTime,
+        publishedTime: article?.publishedTime,
+        currentStreak: article?.currentStreak,
+        profilePicture: article?.media?.url,
+        subCategory: article?.subCategory?.name,
+        category:article?.subCategory?._id
         // videos: user?.videos,
         // likes: user?.likes,
         // profileStatus: user?.profileStatus
-        profileStatus: user?.profileStatus,
-        subscriptionStatus: user?.subscriptionStatus,
-        profilePicture: user?.profilePicture
+        // profileStatus: article?.profileStatus,
+        // subscriptionStatus: article?.subscriptionStatus,
 
       }));
     }
     return [];
   }, [data]);
 
-  const totalEntries = data?.message?.users?.totalDocs || 0;
-  const totalPages = data?.message?.users?.totalPages || 0;
+  const totalEntries = data?.message?.newsArticles?.totalDocs || 0;
+  const totalPages = data?.message?.newsArticles?.totalPages || 0;
 
   // Calculate the entries currently being shown
   const startEntry = (currentPage - 1) * itemsPerPage + 1;
@@ -302,22 +360,11 @@ export function Users() {
       //   ),
       // },
       {
-        id: 'subscriptionStatus',
-        header: 'Subscription Status',
+        id: 'moredetails',
+        header: 'More Details',
         cell: ({ row }) => (
-
-          <div className="flex items-center gap-2">
-            {
-              row?.original?.subscriptionStatus == 'active' ?
-                <span className="bg-green-100 text-green-900 opacity-100 px-4 py-1 rounded-md">{row?.original?.subscriptionStatus}</span>
-                :
-                <span className="bg-red-100 text-red-900 px-4 py-1 rounded-md opacity-100" >{row?.original?.subscriptionStatus}</span>
-
-
-
-            }
-
-
+          <div className="flex items-center">
+            <span className="cursor-pointer border-blue-600 border-2 text-blue-600 px-4 py-1 rounded-full" onClick={() => handleView(row)}>view more details</span>
           </div>
         ),
       },
@@ -350,29 +397,45 @@ export function Users() {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
                 <DropdownMenuItem inset="4" className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
-                  {
-                    row?.original?.profileStatus == 'suspended' ? <span onClick={() => handleProfileUpdate(row?.original, "active")} >Activate</span> : <span onClick={() => handleProfileUpdate(row?.original, "suspended")}> Suspend </span>
-                  }
+                  <span
+                    onClick={() => handleEditArticle(row?.original)}
+                  >Edit this content</span>
+                  {/* : <span onClick={() => handleProfileUpdate(row?.original, "suspended")}> Suspend </span> */}
 
 
-                </DropdownMenuItem>
-                <DropdownMenuItem className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
-                  {
-                    row?.original?.subscriptionStatus == 'inactive' ? <span onClick={() => handleSubUpdate(row?.original, "active")}>Activate Payment</span> : <span onClick={() => handleSubUpdate(row?.original, "inactive")}> Inactivate Payment </span>
-                  }
-                </DropdownMenuItem>
-                <DropdownMenuItem className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
-
-                  <span onClick={() => handleView(row?.original)}>View Details</span>
 
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
-                <DropdownMenuItem
-                  onClick={() => handleDelete(row)}
-                  className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8"
-                >
-                  <span>Delete</span>
+                <DropdownMenuItem inset="4" className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
+                  <span
+                    onClick={() => handleAdd(row?.original)}
+                  >Add Article</span>
+                  {/* : <span onClick={() => handleProfileUpdate(row?.original, "suspended")}> Suspend </span> */}
+
+
+
                 </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
+
+                <DropdownMenuItem className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
+                  <span
+                    onClick={() => handleDelete(row)}
+                  >
+                    Delete this content
+                  </span>
+                  {/* : <span onClick={() => handleSubUpdate(row?.original, "inactive")}> Inactivate Payment </span> */}
+
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
+
+                <DropdownMenuItem className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
+
+                  <span
+                  // onClick={() => handleView(row?.original)}
+                  >Archive this content</span>
+
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -438,7 +501,6 @@ export function Users() {
           </Select>
         </div>*/}
       </div>
-
       <div className="border rounded-xs m-2">
         <Table>
           <TableHeader>
@@ -515,12 +577,14 @@ export function Users() {
             </Pagination>
           </div>
         </div>
-        <UserDetailsModal
+        <ArticlesModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          data={selectedUser}
+          data={selectedArticle}
           darkMode={darkMode}
         />
+
+
         <Alert
           open={alertOpen}
           onOpenChange={setAlertOpen}
@@ -530,6 +594,19 @@ export function Users() {
           onConfirm={deleteVideo}
         />
       </div>
+
+      <AddArticlesModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+      // data={selectedArticle}
+      // darkMode={darkMode}
+      />
+      <EditArticlesModal
+        data={selectedEditArticle}
+        darkMode={darkMode}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+      />
     </div>
   );
 }

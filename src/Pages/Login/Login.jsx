@@ -20,11 +20,11 @@ const Login = () => {
             password: '',
         },
         validationSchema: loginSchema,
-        onSubmit: async (values, { setSubmitting, setErrors,resetForm }) => {
+        onSubmit: async (values, { setSubmitting, setErrors, resetForm }) => {
             try {
-                const response = await axios.post(`https://life-berg.eu-4.evennode.com/api/admin/login`, values);
+                const response = await axios.post(`${import.meta.env.VITE_APP_API_URL}/login`, values);
                 // console.log('Login successful:', response.data);
-                if(response.data.success === true){
+                if (response.data.success === true) {
                     resetForm()
                     toast.success(response.data.message);
                     localStorage.setItem('authToken', response.data.token)
@@ -34,10 +34,10 @@ const Login = () => {
                 // Handle success (e.g., navigate to dashboard, show a success message, etc.)
             } catch (error) {
                 console.error('Login error:', error);
-                if(error?.response?.data?.error.details=='Invalid password'){
+                if (error?.response?.data?.error.details == 'Invalid password') {
                     toast.error(error?.response?.data?.error.details)
                 }
-                if(error?.response?.data?.error?.details.MESSAGE){
+                if (error?.response?.data?.error?.details.MESSAGE) {
                     toast.error(error.response.data.error.details.MESSAGE)
 
                 }
@@ -51,18 +51,18 @@ const Login = () => {
         },
     });
 
-   
+
 
     return (
         <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
             <div className="mx-auto w-full max-w-md space-y-2">
                 <Card className="w-full max-w-md mx-auto">
                     <NavLink to="#" className="flex justify-center pt-3">
-                    <img src={logo} alt="logo" width="80px" />
+                        <img src={logo} alt="logo" width="80px" />
                     </NavLink>
                     <CardHeader>
                         <CardTitle className="text-2xl">Sign in to your account</CardTitle>
-                       {/* <CardDescription>
+                        {/* <CardDescription>
                             Or{" "}
                             <NavLink
                                 to="/register"
@@ -104,7 +104,7 @@ const Login = () => {
                             </div>
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                   {/* <div className="flex items-center">
+                                    {/* <div className="flex items-center">
                                         <Checkbox id="remember-me" name="remember-me" className="h-4 w-4 rounded" />
                                         <Label htmlFor="remember-me" className="ml-2 block text-sm text-foreground">
                                             Remember me
