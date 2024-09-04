@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../../components/Table/Table";
 import { Button } from "../../components/Button/Button";
-import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from "../../components/Pagination/Pagination";
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from "../../Components/Pagination/Pagination";
 import {
   useReactTable,
   getCoreRowModel,
@@ -12,13 +12,25 @@ import {
 import { useMemo, useState } from "react";
 import { Input } from "../../components/Input/Input";
 import avatar from "../../assets/avatar.jpg"
-
+// import {
+//   Select,
+//   SelectGroup,
+//   SelectValue,
+//   SelectTrigger,
+//   SelectContent,
+//   SelectLabel,
+//   SelectItem,
+//   SelectSeparator,
+// } from '../../Components/Select/Select';
+// import * as SelectPrimitive from "@radix-ui/react-select";
+// import { Check, ChevronDown, ChevronUp, EyeIcon, FilePenIcon } from "lucide-react";
 import { useSelector } from 'react-redux';
 import { Select } from '../../components/Select/Select';
 import { SelectTrigger } from '../../components/Select/SelectTrigger';
 import { SelectContent } from '../../components/Select/SelectContent';
 import { SelectItem } from '../../components/Select/SelectItem';
-
+// import { SelectSeparator } from '../../Components/Select/SelectSeparator';
+// import { SelectLabel } from '../../Components/Select/SelectLabel';
 import { SelectValue } from "../../components/Select/SelectValue";
 import Alert from "../../components/Alert/Alert";
 import { TrashIcon } from '../../components/Icons/Icons';
@@ -99,14 +111,14 @@ export function NewsArticles() {
       //   header: 'Title',
       //   accessorKey: 'title',
       // },
-      {
-        id: 'title',
-        header: 'Title',
-        accessorKey: 'title',
-      },
+      // {
+      //   id: 'title',
+      //   header: 'Title',
+      //   accessorKey: 'title',
+      // },
       {
         id: 'type',
-        header: 'Type',
+        header: 'Category',
         accessorKey: 'type'
       },
       {
@@ -114,11 +126,11 @@ export function NewsArticles() {
         header: 'Read Time',
         accessorKey: 'readTime'
       },
-      {
-        id: 'subCategory',
-        header: 'Sub Category',
-        accessorKey: 'subCategory'
-      },
+      // {
+      //   id: 'subCategory',
+      //   header: 'Sub Category',
+      //   accessorKey: 'subCategory'
+      // },
       {
         id: 'publishedTime',
         header: 'Uploaded At',
@@ -245,7 +257,7 @@ export function NewsArticles() {
   // }
 
 
-  const handleAdd = (row) => {
+  const handleAdd = () => {
     // console.log("row for view", row.original)
     // setSelectedArticle(row?.original)
     setIsAddModalOpen(true);
@@ -393,16 +405,16 @@ export function NewsArticles() {
 
 
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
-                <DropdownMenuItem inset="4" className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
+                {/*<DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
+                 <DropdownMenuItem inset="4" className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
                   <span
                     onClick={() => handleAdd(row?.original)}
                   >Add Article</span>
-                  {/* : <span onClick={() => handleProfileUpdate(row?.original, "suspended")}> Suspend </span> */}
 
 
 
-                </DropdownMenuItem>
+
+                </DropdownMenuItem> */}
                 <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
 
                 <DropdownMenuItem className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
@@ -459,7 +471,7 @@ export function NewsArticles() {
 
   return (
     <div>
-      <div className="flex justify-end items-center m-2">
+      <div className="flex justify-end items-center m-2  gap-2">
 
         <div className={`w-full max-w-sm ${darkMode ? 'dark' : ""}`}>
           <Input
@@ -472,6 +484,7 @@ export function NewsArticles() {
             className="w-full max-w-sm"
           />
         </div>
+        <Button className="rounded-none bg-sidebar"  onClick={() => handleAdd()}> Add New Content </Button>
         {/*<div className={`w-full max-w-sm ${darkMode ? 'dark' : ""}`}>
           <Select onValueChange={setItemsPerPage} className="w-full">
             <SelectTrigger className="placeholder" placeholder="Select an option">

@@ -28,7 +28,7 @@ const Login = () => {
                     resetForm()
                     toast.success(response.data.message);
                     localStorage.setItem('authToken', response.data.token)
-                    navigate("/")
+                    navigate("/users")
                     navigate(0)
                 }
                 // Handle success (e.g., navigate to dashboard, show a success message, etc.)

@@ -18,7 +18,7 @@ const Layout = () => {
         {authToken && <Header />}
 
         <Main />
-        {authToken && <Footer />}
+        {/* {authToken && <Footer />} */}
       </div>
     </div>
   )

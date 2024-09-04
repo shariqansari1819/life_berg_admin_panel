@@ -9,8 +9,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        heading: ['var(--font-heading)', ...fontFamily.sans],
-        body: ['var(--font-body)', ...fontFamily.sans]
+        heading: ['Ubuntu', 'sans-serif'], // Replace with your heading font
+        body: ['Ubuntu', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',

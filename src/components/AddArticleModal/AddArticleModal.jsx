@@ -29,20 +29,20 @@ const formats = [
   'link',
 ];
 
-// Fetch subcategories API function
-const fetchSubCategories = async () => {
-  const token = localStorage.getItem('authToken');
-  const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/article-subcategory/all`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
+// // Fetch subcategories API function
+// const fetchSubCategories = async () => {
+//   const token = localStorage.getItem('authToken');
+//   const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/article-subcategory/all`, {
+//     headers: {
+//       'Authorization': `Bearer ${token}`,
+//     },
+//   });
 
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  return response.json();
-};
+//   if (!response.ok) {
+//     throw new Error('Network response was not ok');
+//   }
+//   return response.json();
+// };
 
 export function AddArticlesModal({ isOpen, onClose, data }) {
   const [image, setImage] = useState(null);
@@ -50,13 +50,13 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
   const queryClient = useQueryClient();
 
   // Fetch subcategories using tanStack Query
-  const { data: subCategories = [], error: subCategoriesError, isLoading: isSubCategoriesLoading } = useQuery({
-    queryKey: ['subCategories'],
-    queryFn: fetchSubCategories,
-  });
+  // const { data: subCategories = [], error: subCategoriesError, isLoading: isSubCategoriesLoading } = useQuery({
+  //   queryKey: ['subCategories'],
+  //   queryFn: fetchSubCategories,
+  // });
 
 
-  console.log("subCategories", subCategories)
+  // console.log("subCategories", subCategories)
 
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -67,7 +67,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
     content: Yup.string().required('Content is required'),
     image: Yup.mixed().required('Image is required'),
     type: Yup.string().required('Type is required'),
-    subCategory: Yup.string().required('SubCategory is required'),
+    // subCategory: Yup.string().required('SubCategory is required'),
   });
 
   const mutation = useMutation({
@@ -103,7 +103,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
       content: '',
       image: null,
       type: '', // New field
-      subCategory: '', // New field
+      // subCategory: '', // New field
     },
     validationSchema,
     onSubmit: (values) => {
@@ -118,7 +118,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
       formData.append('mediatype', 'image');
       formData.append('publishedTime', formattedDate);
       formData.append('type', values.type); // New field
-      formData.append('subCategory', values.subCategory); // New field
+      // formData.append('subCategory', values.subCategory); // New field
 
       mutation.mutate(formData);
     },
@@ -215,6 +215,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
                           max="5"
                           onChange={formik.handleChange}
                           value={formik.values.readTime}
+                          className="h-8"
                         />
                         &nbsp; <span> min </span>
                       </div>
@@ -248,13 +249,13 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
                         className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                       >
                         <option value="" label="Select type" />
-                        <option value="food" label="Food" />
+                        <option value="general" label="General" />
                         <option value="medical" label="Medical" />
                       </select>
                       {formik.errors.type && <div className="text-red-500 text-sm">{formik.errors.type}</div>}
                     </div>
 
-                    <div className="mt-4 w-full">
+                    {/* <div className="mt-4 w-full">
                       <label htmlFor="subCategory" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         SubCategory
                       </label>
@@ -279,7 +280,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
                         )}
                       </select>
                       {formik.errors.subCategory && <div className="text-red-500 text-sm">{formik.errors.subCategory}</div>}
-                    </div>
+                    </div> */}
 
                     <Button type="submit" className="mt-4" disabled={mutation.isLoading}>
                       {mutation.isLoading ? 'Submitting...' : 'Submit'}

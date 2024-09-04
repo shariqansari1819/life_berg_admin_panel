@@ -29,25 +29,25 @@ const Header = () => {
         Dashboard
       </div>
       <div className='flex'>
-        <span className="bg-muted rounded p-2 mr-2 relative h-min cursor-pointer">
+        {/* <span className="bg-muted rounded p-2 mr-2 relative h-min cursor-pointer">
           <SearchIcon width={16} height={16} strokeColor="black" />
-        </span>
-        <span className="bg-muted rounded p-2 relative h-min cursor-pointer">
+        </span> */}
+        {/* <span className="bg-muted rounded p-2 relative h-min cursor-pointer">
           <BellIcon width={16} height={16} strokeColor="black" />
           <span className="-top-1 left-6 absolute  w-3.5 h-3.5 bg-red-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
-        </span>
+        </span> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               className="rounded-full transition-colors  duration-300 text-foreground"
             >
-              <div className="rounded-full bg-gray-100 h-8 w-8 flex justify-center items-center mr-2">
+              {/* <div className="rounded-full bg-gray-100 h-8 w-8 flex justify-center items-center mr-2">
                 <Avatar>
                   <AvatarImage src="/placeholder-user.jpg" alt="User Avatar" />
                   <AvatarFallback>UZ</AvatarFallback>
                 </Avatar>
-              </div>
+              </div> */}
               <div>
                 <div className="flex items-center mr-2">
                   <span className="text-lg font-medium text-foreground">Ubaid Ziad</span>
@@ -78,17 +78,17 @@ const Header = () => {
                 </div>
               </div>
             </div>
-            <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700 -mx-1 my-1 h-px" />
-            <DropdownMenuItem inset="4" className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:text-gray-900 dark:hover:text-white text-gray-800 dark:text-gray-100 pl-8">
+            {/* <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700 -mx-1 my-1 h-px" /> */}
+            {/* <DropdownMenuItem inset="4" className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:text-gray-900 dark:hover:text-white text-gray-800 dark:text-gray-100 pl-8">
               <NavLink to="/profile">
                 <span>Profile</span>
               </NavLink>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:text-gray-900 dark:hover:text-white text-gray-800 dark:text-gray-100 pl-8">
+            </DropdownMenuItem> */}
+            {/* <DropdownMenuItem className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:text-gray-900 dark:hover:text-white text-gray-800 dark:text-gray-100 pl-8">
               <NavLink to="/settings">
                 <span>Settings</span>
               </NavLink>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700 -mx-1 my-1 h-px" />
             <DropdownMenuItem
               onClick={handleLogout}

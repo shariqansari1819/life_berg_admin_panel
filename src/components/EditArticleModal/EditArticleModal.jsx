@@ -40,23 +40,23 @@ const validationSchema = Yup.object().shape({
     content: Yup.string().required('Content is required'),
     image: Yup.mixed().required('Image is required'),
     type: Yup.string().required('Type is required'),
-    subCategory: Yup.string().required('SubCategory is required'),
+    // subCategory: Yup.string().required('SubCategory is required'),
 });
 
 
-const fetchSubCategories = async () => {
-    const token = localStorage.getItem('authToken');
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/article-subcategory/all`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+// const fetchSubCategories = async () => {
+//     const token = localStorage.getItem('authToken');
+//     const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/article-subcategory/all`, {
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//       },
+//     });
   
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  };
+//     if (!response.ok) {
+//       throw new Error('Network response was not ok');
+//     }
+//     return response.json();
+//   };
 
 export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
     console.log("edit article component", propsData)
@@ -66,10 +66,10 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
 
 
 
-    const { data: subCategories = [], error: subCategoriesError, isLoading: isSubCategoriesLoading } = useQuery({
-        queryKey: ['subCategories'],
-        queryFn: fetchSubCategories,
-      });
+    // const { data: subCategories = [], error: subCategoriesError, isLoading: isSubCategoriesLoading } = useQuery({
+    //     queryKey: ['subCategories'],
+    //     queryFn: fetchSubCategories,
+    //   });
 
 
     // const { articleDetail, error: articleDetailError, isLoading: isarticleDetailLoading } = useQuery({
@@ -156,7 +156,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
             content: propsData?.description,
             image: propsData?.profilePicture,
             type: propsData?.type,
-            subCategory: propsData?.category,
+            // subCategory: propsData?.category,
         },
         validationSchema,
         enableReinitialize: true,
@@ -172,7 +172,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
             formData.append('mediatype', 'image');
             formData.append('publishedTime', formattedDate);
             formData.append('type', values.type); // New field
-            formData.append('subCategory', values.subCategory); // New field
+            // formData.append('subCategory', values.subCategory); // New field
             console.log("adfasdfasdf")
             mutation.mutate(formData);
         },
@@ -288,6 +288,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                                                     max="5"
                                                     onChange={formik.handleChange}
                                                     value={formik.values.readTime}
+                                                    className="h-8"
                                                 />
                                                 &nbsp; <span> min </span>
                                             </div>
@@ -321,13 +322,13 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                                                 className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                                             >
                                                 <option value="" label="Select type" />
-                                                <option value="food" label="Food" />
+                                                <option value="general" label="General" />
                                                 <option value="medical" label="Medical" />
                                             </select>
                                             {formik.errors.type && <div className="text-red-500 text-sm">{formik.errors.type}</div>}
                                         </div>
 
-                                        <div className="mt-4 w-full">
+                                        {/* <div className="mt-4 w-full">
                                             <label htmlFor="subCategory" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                 SubCategory
                                             </label>
@@ -352,7 +353,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                                                 )}
                                             </select>
                                             {formik.errors.subCategory && <div className="text-red-500 text-sm">{formik.errors.subCategory}</div>}
-                                        </div>
+                                        </div> */}
 
                                         <Button type="submit" className="mt-4" disabled={mutation.isLoading}>
                                             {mutation.isLoading ? 'Submitting...' : 'Submit'}

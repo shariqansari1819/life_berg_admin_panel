@@ -175,8 +175,8 @@ export function ArticlesModal({ isOpen, onClose, data }) {
 
                                 <div className="text-editor">
                                     <ReactQuill
-                                        value={editorValue}
-                                        onChange={handleChange}
+                                        value={data?.description}
+                                        
                                         modules={modules}
                                         formats={formats}
                                         placeholder="Write something awesome..."

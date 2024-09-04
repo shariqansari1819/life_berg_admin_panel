@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    --font-heading: 'Your Heading Font', sans-serif;
-    --font-body: 'Your Body Font', sans-serif;
+    --font-heading: 'Ubuntu', sans-serif; /* Define custom fonts */
+    --font-body: 'Ubuntu', sans-serif;
     --background: 0, 0, 0;
     --white-background:0, 0%, 100%;
     --foreground: 240 10% 3.9%;
