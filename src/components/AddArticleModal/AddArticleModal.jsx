@@ -161,8 +161,8 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
                 <div className="w-[200px] bg-white py-5 px-4 space-y-[6px] text-[13px] border-r border-gray-200">
                   <h2 className="font-semibold text-[15px] mb-4">Create New Article</h2>
                   <div className="text-[#2d87f3] font-medium">Basic Information</div>
-                  <div className="text-gray-600">Attachments & Details</div>
-                  <div className="text-gray-600">Preview</div>
+                  {/* <div className="text-gray-600">Attachments & Details</div>
+                  <div className="text-gray-600">Preview</div> */}
                 </div>
                 <div className="flex-1 p-5 relative">
                   <button className="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
@@ -225,13 +225,20 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
                     <div className='flex items-center justify-between w-full'>
                       <div className=' flex items-center text-[#75767F] text-[16px]'><span>Details:</span></div>
                     </div>
-                    <div className="text-editor w-full">
+                    <div className="text-editor w-full h-54">
                       <ReactQuill
                         value={formik.values.content}
                         onChange={value => formik.setFieldValue('content', value)}
                         modules={modules}
                         formats={formats}
                         placeholder="Write something awesome..."
+
+                        // style={{
+                        //   "minHeight": "200px", /* Ensure there's enough height */
+                        //   "maxHeight": "500px", /* Optional: restrict the max height */
+                        //   "overflowY": "auto"  /* Allow scrolling for long content */
+                        // }}
+                        
                       />
                       {formik.errors.content && <div className="text-red-500 text-sm">{formik.errors.content}</div>}
                     </div>

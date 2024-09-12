@@ -4,10 +4,11 @@
 
 @layer base {
   :root {
-    --font-heading: 'Ubuntu', sans-serif; /* Define custom fonts */
+    --font-heading: 'Ubuntu', sans-serif;
+    /* Define custom fonts */
     --font-body: 'Ubuntu', sans-serif;
     --background: 0, 0, 0;
-    --white-background:0, 0%, 100%;
+    --white-background: 0, 0%, 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -29,24 +30,26 @@
     --radius: 0.5rem;
     --select-content-background-color: 222, 47%, 11%;
     --side-background: 202.4, 51.1%, 44.1%;
-    --side-list-hover:215.6, 100%, 46.3%;
+    --side-list-hover: 215.6, 100%, 46.3%;
 
-    
-    
+
+
   }
 
 
   .dark {
-    --background: #1a1a1a; /* Dark mode background */
-    --foreground: #ffffff; /* Dark mode text */
+    --background: #1a1a1a;
+    /* Dark mode background */
+    --foreground: #ffffff;
+    /* Dark mode text */
   }
 
-  
-  
 
 
-  
-  
+
+
+
+
 }
 
 @layer base {
@@ -58,14 +61,26 @@
     @apply bg-background text-foreground font-body;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-heading;
   }
+
   .select-item {
     @apply px-4 py-2 cursor-pointer;
   }
-  
+
   .select-item:hover {
     @apply bg-gray-200 dark:bg-gray-700;
   }
+}
+
+
+
+.ql-container {
+  height: 100px;
 }

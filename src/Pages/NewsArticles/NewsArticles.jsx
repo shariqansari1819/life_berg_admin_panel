@@ -452,7 +452,7 @@ export function NewsArticles() {
     globalFilterFn: 'includesString',
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div className="text-center">Loading...</div>;
   if (error) return <div>Error loading users: {error.message}</div>;
 
   const getPaginationRange = () => {

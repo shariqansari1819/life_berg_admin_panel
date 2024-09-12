@@ -18,6 +18,7 @@ const Header = () => {
   const navigate = useNavigate()
   const handleLogout = () => {
     localStorage.removeItem("authToken");
+    localStorage.clear()
     navigate(0)
     navigate("/login")
   }
@@ -50,9 +51,9 @@ const Header = () => {
               </div> */}
               <div>
                 <div className="flex items-center mr-2">
-                  <span className="text-lg font-medium text-foreground">Ubaid Ziad</span>
+                  <span className="text-lg font-medium text-foreground">Admin</span>
                 </div>
-                <span className="text-sm text-muted-foreground">Admin</span>
+                {/* <span className="text-sm text-muted-foreground">Admin</span> */}
               </div>
               <div>
                 <ChevronDownIcon width={16} height={16} strokeColor="black" />
@@ -67,14 +68,14 @@ const Header = () => {
             className="z-50 min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-md transition-colors duration-300 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100"
           >
             <div className="flex items-center gap-2 p-2">
-              <Avatar className="h-8 w-8">
+              {/* <Avatar className="h-8 w-8">
                 <AvatarImage src="/placeholder-user.jpg" />
                 <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
+              </Avatar> */}
               <div className="grid gap-0.5 leading-none">
-                <div className="font-semibold">Ubaid Ziad</div>
+                {/* <div className="font-semibold">Ubaid Ziad</div> */}
                 <div className="text-sm text-muted-foreground dark:text-gray-400">
-                  john@example.com
+                  {localStorage.getItem("email")}
                 </div>
               </div>
             </div>

@@ -234,8 +234,8 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                                 <div className="w-[200px] bg-white py-5 px-4 space-y-[6px] text-[13px] border-r border-gray-200">
                                     <h2 className="font-semibold text-[15px] mb-4">Edit Content</h2>
                                     <div className="text-[#2d87f3] font-medium">Basic Information</div>
-                                    <div className="text-gray-600">Attachments & Details</div>
-                                    <div className="text-gray-600">Preview</div>
+                                    {/* <div className="text-gray-600">Attachments & Details</div>
+                                    <div className="text-gray-600">Preview</div> */}
                                 </div>
                                 <div className="flex-1 p-5 relative">
                                     <button className="absolute top-3 right-3 text-gray-400 hover:text-gray-600">

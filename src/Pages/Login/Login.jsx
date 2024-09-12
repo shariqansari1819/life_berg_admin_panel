@@ -27,7 +27,8 @@ const Login = () => {
                 if (response.data.success === true) {
                     resetForm()
                     toast.success(response.data.message);
-                    localStorage.setItem('authToken', response.data.token)
+                    localStorage.setItem('authToken', response.data.token);
+                    localStorage.setItem("email", values.email)
                     navigate("/users")
                     navigate(0)
                 }
