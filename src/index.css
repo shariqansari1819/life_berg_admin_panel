@@ -80,6 +80,10 @@
 }
 
 
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
 
 .ql-container {
   height: 100px;
