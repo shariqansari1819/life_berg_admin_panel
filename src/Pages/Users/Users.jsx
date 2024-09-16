@@ -82,7 +82,7 @@ export function Users() {
           const profilePictureUrl = profilePicture
             ? isValidUrl(profilePicture)
               ? profilePicture
-              : `https://life-berg.eu-4.evennode.com/uploads/images/${profilePicture}`
+              : `${import.meta.env.VITE_APP_API_URL}/uploads/images/${profilePicture}`
             : avatar;
           return (
             <div className="flex items-center gap-2">
@@ -530,9 +530,9 @@ export function Users() {
         <Alert
           open={alertOpen}
           onOpenChange={setAlertOpen}
-          title="Delete Item"
-          description="Are you sure you want to delete this item?"
-          type="fail"
+          title="Delete User"
+          description="Are you sure you want to delete this user?"
+          type="delete"
           onConfirm={deleteVideo}
         />
       </div>

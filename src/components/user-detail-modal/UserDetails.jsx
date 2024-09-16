@@ -21,7 +21,7 @@ export function UserDetailsModal({ isOpen, onClose, data }) {
     const profilePictureUrl = data?.profilePicture
         ? isValidUrl(data?.profilePicture)
             ? data?.profilePicture
-            : `https://life-berg.eu-4.evennode.com/uploads/images/${data?.profilePicture}`
+            : `{${import.meta.env.VITE_APP_API_URL}/uploads/images/${data?.profilePicture}`
         : avatar;
 
     return (

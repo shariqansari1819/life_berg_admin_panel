@@ -89,7 +89,7 @@ const Banners = () => {
 
     return (
         <div className="flex justify-center items-center m-2 flex-col">
-            {data?.data ?  "" :
+            {data?.data.length !== 0 ?  "" :
             <Button className="rounded-md bg-sidebar my-2" onClick={() => handleAdd()}> Add New Content </Button>
 }
             {
@@ -98,6 +98,7 @@ const Banners = () => {
                         <div className="flex justify-between items-center">
                             <div>
                                 <div>{banner?.title}</div>
+                                <div>{banner?.description}</div>
                                 <div>{moment(banner?.startDate).format("MMM Do YY")}</div>
                                 <div>{moment(banner?.endDate).format("MMM Do YY")}</div>
                             </div>
@@ -120,9 +121,9 @@ const Banners = () => {
                 <Alert
                     open={alertOpen}
                     onOpenChange={setAlertOpen}
-                    title="Delete Item"
-                    description="Are you sure you want to delete this item?"
-                    type="fail"
+                    title="Delete Banner"
+                    description="Are you sure you want to delete this banner?"
+                    type="delete"
                     onConfirm={deleteBanner}
                 />
             }

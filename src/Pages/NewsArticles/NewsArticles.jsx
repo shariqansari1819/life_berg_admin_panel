@@ -88,8 +88,8 @@ export function NewsArticles() {
         accessorKey: 'title',
         cell: ({ row }) => {
           const profilePicture = row.original.profilePicture;
-          console.log("title", profilePicture)
-          const profilePictureUrl = profilePicture ? `${import.meta.env.VITE_APP_BASE_URL}uploads/images/${profilePicture}`  : avatar;
+          const profilePictureUrl = profilePicture ?  `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${profilePicture}`
+            : avatar;
           return (
             <div className="flex items-center gap-2">
               <img
@@ -313,7 +313,7 @@ export function NewsArticles() {
         currentStreak: article?.currentStreak,
         profilePicture: article?.media?.url,
         subCategory: article?.subCategory?.name,
-        category:article?.subCategory?._id
+        category: article?.subCategory?._id
         // videos: user?.videos,
         // likes: user?.likes,
         // profileStatus: user?.profileStatus
@@ -480,7 +480,7 @@ export function NewsArticles() {
             className="w-full max-w-sm"
           />
         </div>
-        <Button className="rounded-none bg-sidebar"  onClick={() => handleAdd()}> Add New Content </Button>
+        <Button className="rounded-none bg-sidebar" onClick={() => handleAdd()}> Add New Content </Button>
         {/*<div className={`w-full max-w-sm ${darkMode ? 'dark' : ""}`}>
           <Select onValueChange={setItemsPerPage} className="w-full">
             <SelectTrigger className="placeholder" placeholder="Select an option">
@@ -574,24 +574,32 @@ export function NewsArticles() {
             </Pagination>
           </div>
         </div>
-        <ArticlesModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          data={selectedArticle}
-          darkMode={darkMode}
-        />
+
+        {
+          isModalOpen &&
+          <ArticlesModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            data={selectedArticle}
+            darkMode={darkMode}
+          />
+        }
+
+        {
+          alertOpen &&
+          <Alert
+            open={alertOpen}
+            onOpenChange={setAlertOpen}
+            title="Delete Article"
+            description="Are you sure you want to delete this Article?"
+            type="delete"
+            onConfirm={deleteVideo}
+          />
 
 
-        <Alert
-          open={alertOpen}
-          onOpenChange={setAlertOpen}
-          title="Delete Item"
-          description="Are you sure you want to delete this item?"
-          type="fail"
-          onConfirm={deleteVideo}
-        />
+        }
+
       </div>
-
       <AddArticlesModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
@@ -604,6 +612,9 @@ export function NewsArticles() {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
       />
+
+      
+
     </div>
   );
 }

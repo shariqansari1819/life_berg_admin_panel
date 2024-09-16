@@ -177,7 +177,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
             formData.append('publishedTime', formattedDate);
             formData.append('type', values.type); // New field
             // formData.append('subCategory', values.subCategory); // New field
-            console.log("adfasdfasdf")
+            // console.log("adfasdfasdf")
             mutation.mutate(formData);
         },
     });

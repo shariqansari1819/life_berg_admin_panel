@@ -16,10 +16,10 @@ const Alert = ({ open, onOpenChange, title, description, type, onConfirm }) => {
       buttonHover: 'hover:bg-red-700',
     },
     delete: {
-      bg: 'bg-yellow-100 dark:bg-red-800',
-      text: 'text-yellow-800 dark:text-red-100',
+      bg: 'bg-white dark:bg-red-800',
+      text: 'text-black dark:text-red-100',
       buttonBg: 'bg-red-600',
-      buttonHover: 'hover:bg-yellow-700',
+      buttonHover: '',
     },
   };
 
