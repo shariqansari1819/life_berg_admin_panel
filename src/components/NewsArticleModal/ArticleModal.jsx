@@ -13,17 +13,21 @@ import { useState } from 'react';
 
 const modules = {
     toolbar: [
-        ['bold','italic'],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-        ['link']
+        [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+        [{ size: [] }],
+        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+        [{ 'align': [] }],
+        ['link', 'image'],
+        ['clean']
     ],
 };
 
 const formats = [
-    'bold', 'italic',
+    'header', 'font', 'size',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
     'list', 'bullet', 'indent',
-    'align', // Include align in formats
-    'link',
+    'align', 'link', 'image'
 ];
 export function ArticlesModal({ isOpen, onClose, data }) {
     console.log("data", data)
@@ -176,7 +180,7 @@ export function ArticlesModal({ isOpen, onClose, data }) {
                                 <div className="text-editor">
                                     <ReactQuill
                                         value={data?.description}
-                                        
+
                                         modules={modules}
                                         formats={formats}
                                         placeholder="Write something awesome..."

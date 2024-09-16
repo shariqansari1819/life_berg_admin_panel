@@ -89,7 +89,7 @@ const Banners = () => {
 
     return (
         <div className="flex justify-center items-center m-2 flex-col">
-            <Button className="rounded-none bg-sidebar my-2" onClick={() => handleAdd()}> Add New Content </Button>
+            <Button className="rounded-md bg-sidebar my-2" onClick={() => handleAdd()}> Add New Content </Button>
             {
                 data?.data?.map((banner) => (
                     <div key={banner?._id} className="bg-background rounded-lg border p-6 w-full max-w-full">

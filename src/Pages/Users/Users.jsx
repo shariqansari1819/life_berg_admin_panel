@@ -106,6 +106,11 @@ export function Users() {
         header: 'Location',
         accessorKey: 'country',
       },
+      {
+        id: 'vocation',
+        header: 'Vocation',
+        accessorKey: 'vocation',
+      },
       // {
       //   id:'profileStatus',
       //   header:"Profile Status",
@@ -259,6 +264,7 @@ export function Users() {
         createdAt: user?.createdAt,
         dob: user?.dob,
         currentStreak: user?.currentStreak,
+        vocation:user?.primaryVocation,
         // videos: user?.videos,
         // likes: user?.likes,
         // profileStatus: user?.profileStatus

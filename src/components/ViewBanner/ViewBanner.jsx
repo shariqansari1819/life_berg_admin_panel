@@ -30,11 +30,13 @@ const ViewBanner = ({ data, onClose }) => {
 
     const initialValues = {
         title: data?.title,
+        description: data?.description,
         dateRange: [data?.startDate ? new Date(data?.startDate) : null, data?.endDate ? new Date(data?.endDate) : null], // Ensure dates are Date objects
     };
 
     const mutation = useMutation({
         mutationFn: async (newBanner) => {
+            console.log("newBanner", newBanner)
             const token = localStorage.getItem("authToken");
             const response = await fetch(
                 `${import.meta.env.VITE_APP_API_URL}/banner/update`,
@@ -52,7 +54,7 @@ const ViewBanner = ({ data, onClose }) => {
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries("bannersdsd"); // Assuming you have a query with this key
-            console.log("Banner created successfully:", data?.error?.details?.MESSAGE);
+            console.log("Banner Updated successfully:", data?.error?.details?.MESSAGE);
             setError(data?.error?.details?.MESSAGE);
             if (data?.error?.STATUS !== 400) {
                 onClose();
@@ -71,6 +73,7 @@ const ViewBanner = ({ data, onClose }) => {
 
         console.log({
             title: values.title,
+            description: values?.description,
             startDate: isoStartDate,
             endDate: isoEndDate,
         });
@@ -78,6 +81,7 @@ const ViewBanner = ({ data, onClose }) => {
         mutation.mutate({
             id: data?._id,
             title: values.title,
+            description: values?.description,
             startDate: isoStartDate,
             endDate: isoEndDate,
         });
@@ -101,6 +105,21 @@ const ViewBanner = ({ data, onClose }) => {
                         />
                         <ErrorMessage
                             name="title"
+                            component="div"
+                            className="text-red-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-1">Description:</label>
+                        <Field
+                            name="description"
+                            as="textarea"
+                            rows={4}
+                            className="border p-2 w-full"
+                            placeholder="Enter description"
+                        />
+                        <ErrorMessage
+                            name="description"
                             component="div"
                             className="text-red-500"
                         />
@@ -130,7 +149,7 @@ const ViewBanner = ({ data, onClose }) => {
 
                     {error && <div className="text-red-500">{error}</div>}
 
-                    <button type="submit" className="bg-blue-500 text-white px-4 py-2">
+                    <button type="submit" className="bg-sidebar text-white px-4 py-2">
                         Submit
                     </button>
                 </Form>

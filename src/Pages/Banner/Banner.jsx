@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 // Yup validation schema
 const validationSchema = Yup.object().shape({
   title: Yup.string().required("Title is required"),
+  description: Yup.string().required("Description is required"),
   dateRange: Yup.array()
     .test("startDate-endDate", "Both start and end dates are required", (value) => {
       const [startDate, endDate] = value;
@@ -30,6 +31,7 @@ const Banner = ({ onClose }) => {
 
   const initialValues = {
     title: "",
+    description:"",
     dateRange: [null, null],
   };
 
@@ -75,7 +77,8 @@ const Banner = ({ onClose }) => {
 
 
     mutation.mutate({
-      title: values.title,
+      title: values?.title,
+      description:values?.description,
       startDate: isoStartDate,
       endDate: isoEndDate
     });
@@ -99,6 +102,21 @@ const Banner = ({ onClose }) => {
             />
             <ErrorMessage
               name="title"
+              component="div"
+              className="text-red-500"
+            />
+          </div>
+          <div>
+            <label className="block mb-1">Description:</label>
+            <Field
+              name="description"
+              as="textarea"
+              rows={4}
+              className="border p-2 w-full"
+              placeholder="Enter description"
+            />
+            <ErrorMessage
+              name="description"
               component="div"
               className="text-red-500"
             />
@@ -128,7 +146,7 @@ const Banner = ({ onClose }) => {
           {
             error && <div className="text-red-500"> {error}  </div>
           }
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2">
+          <button type="submit" className="bg-sidebar text-white px-4 py-2">
             Submit
           </button>
         </Form>
