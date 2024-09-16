@@ -136,8 +136,8 @@ export function Users() {
 
   const handleDelete = (row) => {
     console.log("row", row.original)
-    // setDeleteObject(row.original)
-    // setAlertOpen(!alertOpen)
+    setDeleteObject(row.original)
+    setAlertOpen(!alertOpen)
   };
 
   const deleteVideoMutation = useMutation({

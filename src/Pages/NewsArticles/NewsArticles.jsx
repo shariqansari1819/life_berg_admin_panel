@@ -88,12 +88,8 @@ export function NewsArticles() {
         accessorKey: 'title',
         cell: ({ row }) => {
           const profilePicture = row.original.profilePicture;
-          // console.log("profilePicture", profilePicture)
-          const profilePictureUrl = profilePicture
-            ? isValidUrl(profilePicture)
-              ? profilePicture
-              : `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${profilePicture}`
-            : avatar;
+          console.log("title", profilePicture)
+          const profilePictureUrl = profilePicture ? `${import.meta.env.VITE_APP_BASE_URL}uploads/images/${profilePicture}`  : avatar;
           return (
             <div className="flex items-center gap-2">
               <img
