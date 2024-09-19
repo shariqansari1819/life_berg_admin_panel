@@ -98,6 +98,72 @@ ol, ul {
   padding-left: 20px;
 }
 
+
+h1 {
+  font-size: 2.5em; /* Customize the size */
+  font-weight: bold;
+}
+
+
+.ql-font-serif {
+  font-family: 'Georgia', serif;
+}
+
+.ql-font-monospace {
+  font-family: 'Courier New', monospace;
+}
+
+.ql-font-roboto {
+  font-family: 'Roboto', sans-serif;
+}
+
+.ql-font-lobster {
+  font-family: 'Lobster', cursive;
+}
+
+/* Add custom size options if needed */
+.ql-size-small {
+  font-size: 12px;
+}
+
+.ql-size-medium {
+  font-size: 16px;
+}
+
+.ql-size-large {
+  font-size: 20px;
+}
+
+.ql-size-huge {
+  font-size: 32px;
+}
+
+
+/* Custom alignment styles if needed */
+.ql-align-left {
+  text-align: left;
+}
+
+.ql-align-center {
+  text-align: center;
+}
+
+.ql-align-right {
+  text-align: right;
+}
+
+.ql-align-justify {
+  text-align: justify;
+}
+
+
+
+h2 {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+
 .ql-container {
   height: 100px;
 }
