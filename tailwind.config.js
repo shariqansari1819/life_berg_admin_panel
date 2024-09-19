@@ -8,6 +8,13 @@ export default {
   ],
   theme: {
     extend: {
+      
+      //   listStyleType: {
+      //     none: 'none',
+      //     disc: 'disc',
+      //     decimal: 'decimal',
+      //   }
+      // ,
       fontFamily: {
         heading: ['Ubuntu', 'sans-serif'], // Replace with your heading font
         body: ['Ubuntu', 'sans-serif'],

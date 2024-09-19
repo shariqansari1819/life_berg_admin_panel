@@ -16,22 +16,24 @@ import axios from 'axios';
 
 const modules = {
     toolbar: [
-      [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+        [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
         [{ size: [] }],
         ['bold', 'italic', 'underline', 'strike', 'blockquote'],
         [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
         [{ 'align': [] }],
         ['link', 'image'],
-        ['clean']
-    ],
+        ['clean'] // Clear formatting
+    ]
   };
   
   const formats = [
-   'header', 'font', 'size',
+    'header', 'font', 'size',
     'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
+    'list', 'bullet', // Ensure these are included
+    'indent',
     'align', 'link', 'image'
-  ];
+];
+
 
 
 
@@ -249,7 +251,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                                             </button>
                                         </Dialog.Close>
                                     </button>
-                                    <div className="flex flex-col items-start">
+                                    <div className="flex flex-col items-start h-[500px] overflow-scroll overflow-x-hidden">
                                         <div className="relative w-24 h-24">
                                             <input
                                                 type="file"
@@ -307,7 +309,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                                                 value={formik.values.content}
                                                 onChange={value => formik.setFieldValue('content', value)}
                                                 modules={modules}
-                                                formats={formats}
+                                               
                                                 placeholder="Write something awesome..."
                                             />
                                             {formik.errors.content && <div className="text-red-500 text-sm">{formik.errors.content}</div>}

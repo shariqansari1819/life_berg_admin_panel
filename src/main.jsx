@@ -7,6 +7,8 @@ import { Toaster } from 'react-hot-toast'
 import { Provider } from 'react-redux'
 import store from "./store/store";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import 'react-quill/dist/quill.snow.css';
+
 
 const queryClient = new QueryClient();
 
