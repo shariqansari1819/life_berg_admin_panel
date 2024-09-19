@@ -66,7 +66,7 @@ export function ArticlesModal({ isOpen, onClose, data }) {
             )}>
 
                 <Dialog.Description className="">
-                    <Card className="bg-[#f9f9f9] shadow-md rounded-[4px] overflow-hidden">
+                    <Card className="bg-[#f9f9f9] shadow-md rounded-[4px] overflow-scroll overflow-x-hidden">
                         <div className="flex h-full">
                             <div className="w-[200px] bg-white py-5 px-4 space-y-[6px] text-[13px] border-r border-gray-200">
                                 <h2 className="font-semibold text-[15px] mb-4">Content Details</h2>
@@ -103,6 +103,8 @@ export function ArticlesModal({ isOpen, onClose, data }) {
                                         <div className=' flex items-center text-[#75767F] text-[16px]'> <span > <Book className='text-[16px]' /> </span> &nbsp; <span>Estimated read time:</span> </div>
                                         <div> <span className='text-[#75767F] text-[16px]'>{data?.readTime} </span> </div>
                                     </div>
+
+                                    <div dangerouslySetInnerHTML={{ __html: data.description }} />
 
                                     {/* <div className='flex gap-28'>
                                         <div>
@@ -171,13 +173,13 @@ export function ArticlesModal({ isOpen, onClose, data }) {
                                         </div>
                                     </div> */}
                                 </div>
-                                <div className="w-full h-[2px] bg-blue-100 my-2 "></div>
+                                {/* <div className="w-full h-[2px] bg-blue-100 my-2 "></div> */}
 
-                                <div className='flex items-center justify-between w-full'>
+                                {/* <div className='flex items-center justify-between w-full'>
                                     <div className=' flex items-center text-[#75767F] text-[16px]'><span>Details:</span> </div>
-                                </div>
+                                </div> */}
 
-                                <div className="text-editor">
+                                {/* <div className="text-editor">
                                     <ReactQuill
                                         value={data?.description}
 
@@ -185,7 +187,7 @@ export function ArticlesModal({ isOpen, onClose, data }) {
                                         formats={formats}
                                         placeholder="Write something awesome..."
                                     />
-                                </div>
+                                </div> */}
 
                                 {/* <div className="space-y-[10px] text-[13px]">
                                     <div className="flex items-center">

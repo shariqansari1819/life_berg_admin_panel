@@ -36,7 +36,7 @@ import Alert from "../../components/Alert/Alert";
 import { TrashIcon } from '../../components/Icons/Icons';
 import { ChevronDownIcon, ChevronUpIcon, SearchIcon, VerticalEllipsisIcon } from '../../icons/icons';
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { UserDetailsModal } from '../../components/user-detail-modal/UserDetails';
 
 
@@ -57,6 +57,7 @@ export function Users() {
   const [alertOpen, setAlertOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
 
   function isValidUrl(string) {
@@ -151,11 +152,23 @@ export function Users() {
         },
         body: JSON.stringify({ userId: userId }),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error deleting video');
+      if (response?.status == 401) {
+        localStorage.removeItem("authToken");
+        navigate(0)
+        navigate("/login")
       }
-      return response.json();
+      else if (response?.status == 400) {
+        localStorage.removeItem("authToken");
+        navigate(0)
+        navigate("/login")
+      }
+      else if (response?.status == 500) {
+        localStorage.removeItem("authToken");
+        navigate(0)
+        navigate("/login")
+      } else {
+        return response.json();
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['videos', currentPage, itemsPerPage]);
@@ -181,11 +194,23 @@ export function Users() {
       }
 
       );
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error updating user');
+      if (response?.status == 401) {
+        localStorage.removeItem("authToken");
+        navigate(0)
+        navigate("/login")
       }
-      return response.json();
+      else if (response?.status == 400) {
+        localStorage.removeItem("authToken");
+        navigate(0)
+        navigate("/login")
+      }
+      else if (response?.status == 500) {
+        localStorage.removeItem("authToken");
+        navigate(0)
+        navigate("/login")
+      } else {
+        return response.json();
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['videos', currentPage, itemsPerPage]);
@@ -244,11 +269,23 @@ export function Users() {
           'Authorization': `Bearer ${token}`,
         },
       });
-      // console.log("response", response)
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+      if (response?.status == 401) {
+        localStorage.removeItem("authToken");
+        navigate(0)
+        navigate("/login")
       }
-      return response.json();
+      else if (response?.status == 400) {
+        localStorage.removeItem("authToken");
+        navigate(0)
+        navigate("/login")
+      }
+      else if (response?.status == 500) {
+        localStorage.removeItem("authToken");
+        navigate(0)
+        navigate("/login")
+      } else {
+        return response.json();
+      }
     },
     keepPreviousData: true,
 
@@ -264,7 +301,7 @@ export function Users() {
         createdAt: user?.createdAt,
         dob: user?.dob,
         currentStreak: user?.currentStreak,
-        vocation:user?.primaryVocation,
+        vocation: user?.primaryVocation,
         // videos: user?.videos,
         // likes: user?.likes,
         // profileStatus: user?.profileStatus
@@ -500,7 +537,7 @@ export function Users() {
                   <PaginationItem key={page}>
                     <PaginationLink
                       onClick={() => {
-                        if (currentPage < totalPages) {
+                        if (page <= totalPages) {
                           setCurrentPage(page);
                         }
                       }}
