@@ -66,7 +66,7 @@ export function ArticlesModal({ isOpen, onClose, data }) {
             )}>
 
                 <Dialog.Description className="">
-                    <Card className="bg-[#f9f9f9] shadow-md rounded-[4px] overflow-scroll overflow-x-hidden">
+                    <Card className="bg-[#f9f9f9] shadow-md rounded-[4px] max-h-4/6 min-h-4/6 h-4/6 overflow-scroll overflow-x-hidden">
                         <div className="flex h-full">
                             <div className="w-[200px] bg-white py-5 px-4 space-y-[6px] text-[13px] border-r border-gray-200">
                                 <h2 className="font-semibold text-[15px] mb-4">Content Details</h2>
