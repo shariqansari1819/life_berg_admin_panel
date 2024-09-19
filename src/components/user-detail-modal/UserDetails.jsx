@@ -43,8 +43,8 @@ export function UserDetailsModal({ isOpen, onClose, data }) {
                             <div className="w-[200px] bg-white py-5 px-4 space-y-[6px] text-[13px] border-r border-gray-200">
                                 <h2 className="font-semibold text-[15px] mb-4">User Details</h2>
                                 <div className="text-[#2d87f3] font-medium">Profile</div>
-                                <div className="text-gray-600">Membership Status</div>
-                                <div className="text-gray-600">Payment History</div>
+                                {/* <div className="text-gray-600">Membership Status</div> */}
+                                {/* <div className="text-gray-600">Payment History</div> */}
                             </div>
                             <div className="flex-1 p-5 relative">
                                 <button className="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
@@ -59,7 +59,7 @@ export function UserDetailsModal({ isOpen, onClose, data }) {
                                         <img src={profilePictureUrl} alt="User" className="w-full h-full object-cover" />
                                     </div>
                                     <div>
-                                        <div className="text-[11px] text-gray-500">ubaidziad #881288</div>
+                                        {/* <div className="text-[11px] text-gray-500">ubaidziad #881288</div> */}
                                         <h3 className="text-[17px] font-semibold mt-[2px]">{data?.userName}</h3>
                                     </div>
                                 </div>

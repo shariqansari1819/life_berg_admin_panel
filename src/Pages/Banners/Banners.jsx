@@ -7,6 +7,7 @@ import Alert from '../../components/Alert/Alert';
 import { Modal } from '../../components/Modal/Modal';
 import Banner from '../Banner/Banner';
 import ViewBanner from '../../components/ViewBanner/ViewBanner';
+import { useNavigate } from 'react-router-dom';
 
 const Banners = () => {
     const queryClient = useQueryClient();
@@ -15,6 +16,7 @@ const Banners = () => {
     const [updateObject, setUpdateObject] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+    const navigate = useNavigate();
 
 
     // UseQuery must always run in the same order
@@ -27,10 +29,23 @@ const Banners = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+            if (response?.status == 401) {
+                localStorage.removeItem("authToken");
+                navigate(0)
+                navigate("/login")
             }
-            return response.json();
+            else if (response?.status == 400) {
+                localStorage.removeItem("authToken");
+                navigate(0)
+                navigate("/login")
+            }
+            else if (response?.status == 500) {
+                localStorage.removeItem("authToken");
+                navigate(0)
+                navigate("/login")
+            } else {
+                return response.json();
+            }
         },
         keepPreviousData: true,
     });
@@ -47,11 +62,23 @@ const Banners = () => {
                 },
                 body: JSON.stringify({ id: bannerId }),
             });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Error deleting banner');
+            if (response?.status == 401) {
+                localStorage.removeItem("authToken");
+                navigate(0)
+                navigate("/login")
             }
-            return response.json();
+            else if (response?.status == 400) {
+                localStorage.removeItem("authToken");
+                navigate(0)
+                navigate("/login")
+            }
+            else if (response?.status == 500) {
+                localStorage.removeItem("authToken");
+                navigate(0)
+                navigate("/login")
+            } else {
+                return response.json();
+            }
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['banners']);
@@ -89,9 +116,9 @@ const Banners = () => {
 
     return (
         <div className="flex justify-center items-center m-2 flex-col">
-            {data?.data.length !== 0 ?  "" :
-            <Button className="rounded-md bg-sidebar my-2" onClick={() => handleAdd()}> Add New Content </Button>
-}
+            {data?.data.length !== 0 ? "" :
+                <Button className="rounded-md bg-sidebar my-2" onClick={() => handleAdd()}> Add New Content </Button>
+            }
             {
                 data?.data?.map((banner) => (
                     <div key={banner?._id} className="bg-background rounded-lg border p-6 w-full max-w-full">

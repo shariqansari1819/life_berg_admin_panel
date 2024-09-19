@@ -36,7 +36,7 @@ import Alert from "../../components/Alert/Alert";
 import { TrashIcon } from '../../components/Icons/Icons';
 import { ChevronDownIcon, ChevronUpIcon, SearchIcon, VerticalEllipsisIcon } from '../../icons/icons';
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { UserDetailsModal } from '../../components/user-detail-modal/UserDetails';
 import moment from 'moment';
 import { ArticlesModal } from '../../components/NewsArticleModal/ArticleModal';
@@ -65,6 +65,7 @@ export function NewsArticles() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const navigate = useNavigate();
 
 
 
@@ -289,14 +290,25 @@ export function NewsArticles() {
           'Authorization': `Bearer ${token}`,
         },
       });
-      // console.log("response", response)
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+      if (response?.status == 401) {
+        localStorage.removeItem("authToken");
+        navigate(0)
+        navigate("/login")
       }
-      console.log("reposne", response)
-      return response.json();
+      else if (response?.status == 400) {
+        localStorage.removeItem("authToken");
+        navigate(0)
+        navigate("/login")
+      }
+      else if (response?.status == 500) {
+        localStorage.removeItem("authToken");
+        navigate(0)
+        navigate("/login")
+      } else {
+        return response.json();
+      }
     },
-    // keepPreviousData: true,
+    keepPreviousData: true,
 
   });
 
@@ -453,14 +465,14 @@ export function NewsArticles() {
 
   const getPaginationRange = () => {
     const maxVisiblePages = 3;
+    if (totalPages <= maxVisiblePages) {
+      return [...Array(totalPages).keys()].map(i => i + 1);
+    }
     const startPage = Math.max(currentPage - Math.floor(maxVisiblePages / 2), 1);
     const endPage = Math.min(startPage + maxVisiblePages - 1, totalPages);
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      return [...Array(maxVisiblePages).keys()].map(i => i + Math.max(endPage - maxVisiblePages + 1, 1));
-    }
-
-    return [...Array(endPage - startPage + 1).keys()].map(i => i + startPage);
+    const adjustedStartPage = Math.max(endPage - maxVisiblePages + 1, 1);
+    const adjustedEndPage = Math.min(adjustedStartPage + maxVisiblePages - 1, totalPages);
+    return [...Array(adjustedEndPage - adjustedStartPage + 1).keys()].map(i => i + adjustedStartPage);
   };
 
   const paginationRange = getPaginationRange();
@@ -553,7 +565,7 @@ export function NewsArticles() {
                   <PaginationItem key={page}>
                     <PaginationLink
                       onClick={() => {
-                        if (currentPage < totalPages) {
+                        if (page <= totalPages) {
                           setCurrentPage(page);
                         }
                       }}
