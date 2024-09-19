@@ -3,6 +3,13 @@
 @tailwind utilities;
 
 @layer base {
+  ul, ol {
+    list-style: revert;
+  }
+}
+
+
+@layer base {
   :root {
     --font-heading: 'Ubuntu', sans-serif;
     /* Define custom fonts */
@@ -77,6 +84,7 @@
   .select-item:hover {
     @apply bg-gray-200 dark:bg-gray-700;
   }
+  
 }
 
 
@@ -84,6 +92,11 @@
   width: 100%;
 }
 
+
+ol, ul {
+  /* list-style-type: inherit !important; */
+  padding-left: 20px;
+}
 
 .ql-container {
   height: 100px;
