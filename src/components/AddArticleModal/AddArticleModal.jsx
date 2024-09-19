@@ -16,8 +16,8 @@ import axios from 'axios';
 
 const modules = {
   toolbar: [
-    [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
-      [{ size: [] }],
+    [{ 'header': '1' }, { 'header': '2' }, { font: ['serif', 'monospace', 'roboto', 'lobster'] }],
+      [{ size:['small', 'medium', 'large', 'huge'] }],
       ['bold', 'italic', 'underline', 'strike', 'blockquote'],
       [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
       [{ 'align': [] }],
@@ -176,7 +176,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
                       </button>
                     </Dialog.Close>
                   </button>
-                  <div className="flex flex-col items-start">
+                  <div className="flex flex-col items-start h-[500px] overflow-scroll overflow-x-hidden">
                     <div className="relative w-24 h-24">
                       <input
                         type="file"
