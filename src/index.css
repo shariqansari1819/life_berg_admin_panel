@@ -141,21 +141,42 @@ h1 {
 
 /* Custom alignment styles if needed */
 .ql-align-left {
-  text-align: left;
+  text-align: left !important;
 }
 
+
+
 .ql-align-center {
-  text-align: center;
+  text-align: center !important;
 }
 
 .ql-align-right {
-  text-align: right;
+  text-align: right !important;
 }
 
-.ql-align-justify {
-  text-align: justify;
+.ql-editor .ql-align-justify {
+  text-align: justify !important;
 }
 
+
+/* Blockquote styles */
+.ql-editor blockquote {
+  border-left: 2px solid #ccc; /* Change color as needed */
+  padding-left: 1em;
+  margin: 1em 0;
+  font-style: italic; /* Optional */
+}
+
+/* Link styles */
+.ql-editor a {
+  color: #007bff; /* Change color as needed */
+  text-decoration: underline;
+}
+
+.ql-editor a:hover {
+  color: #0056b3; /* Change color as needed */
+  text-decoration: none;
+}
 
 
 h2 {
@@ -165,5 +186,6 @@ h2 {
 
 
 .ql-container {
+  
   height: 100px;
 }
