@@ -82,7 +82,7 @@ export function ArticlesModal({ isOpen, onClose, data }) {
                                         </button>
                                     </Dialog.Close>
                                 </button>
-                                <div className="flex flex-col items-start h-[500px] overflow-scroll overflow-x-hidden">
+                                <div className="flex flex-col w-full items-start h-[500px] overflow-scroll overflow-x-hidden">
                                     <div className="relative w-24 h-24">
                                         <img
                                             src={profilePictureUrl}
@@ -104,7 +104,7 @@ export function ArticlesModal({ isOpen, onClose, data }) {
                                         <div> <span className='text-[#75767F] text-[16px]'>{data?.readTime} </span> </div>
                                     </div>
 
-                                    <div dangerouslySetInnerHTML={{ __html: data.description }} />
+                                    <div className='w-full ql-editor' dangerouslySetInnerHTML={{ __html: data.description }} />
 
                                     {/* <div className='flex gap-28'>
                                         <div>
