@@ -66,8 +66,8 @@ export function ArticlesModal({ isOpen, onClose, data }) {
             )}>
 
                 <Dialog.Description className="">
-                    <Card className="bg-[#f9f9f9] shadow-md rounded-[4px] overflow-scroll overflow-x-hidden">
-                        <div className="flex h-full">
+                    <Card className="bg-[#f9f9f9] shadow-md rounded-[4px] ">
+                        <div className="flex">
                             <div className="w-[200px] bg-white py-5 px-4 space-y-[6px] text-[13px] border-r border-gray-200">
                                 <h2 className="font-semibold text-[15px] mb-4">Content Details</h2>
                                 <div className="text-[#2d87f3] font-medium">Preview</div>
@@ -82,7 +82,7 @@ export function ArticlesModal({ isOpen, onClose, data }) {
                                         </button>
                                     </Dialog.Close>
                                 </button>
-                                <div className="flex flex-col items-start">
+                                <div className="flex flex-col items-start h-[500px] overflow-scroll overflow-x-hidden">
                                     <div className="relative w-24 h-24">
                                         <img
                                             src={profilePictureUrl}
