@@ -16,22 +16,27 @@ import axios from 'axios';
 
 const modules = {
   toolbar: [
-    [{ 'header': '1' }, { 'header': '2' }, { font: ['serif', 'monospace', 'roboto', 'lobster'] }],
-      [{ size:['small', 'medium', 'large', 'huge'] }],
+      [{ 'header': '1' }, { 'header': '2' }, { font: ['serif', 'monospace', 'roboto', 'lobster'] }],
+      [{ size: ['small', 'medium', 'large', 'huge']}],
       ['bold', 'italic', 'underline', 'strike', 'blockquote'],
       [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
       [{ 'align': [] }],
-      ['link', 'image'],
-      ['clean']
-  ],
+      [{ 'color': ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }, 
+      { 'background': ['#ffffff', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }],
+      ['link'],
+      ['clean'] // Clear formatting
+  ]
 };
 
 const formats = [
- 'header', 'font', 'size',
+  'header', 'font', 'size',
   'bold', 'italic', 'underline', 'strike', 'blockquote',
-  'list', 'bullet', 'indent',
-  'align', 'link', 'image'
+  'list', 'bullet', // Ensure these are included
+  'indent',
+  'align', 'link',
+  'color', 'background',
 ];
+
 
 // // Fetch subcategories API function
 // const fetchSubCategories = async () => {

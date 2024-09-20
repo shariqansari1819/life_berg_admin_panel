@@ -21,7 +21,9 @@ const modules = {
         ['bold', 'italic', 'underline', 'strike', 'blockquote'],
         [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
         [{ 'align': [] }],
-        ['link', 'image'],
+        [{ 'color': ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }, 
+        { 'background': ['#ffffff', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }],
+        ['link'],
         ['clean'] // Clear formatting
     ]
   };
@@ -31,7 +33,8 @@ const modules = {
     'bold', 'italic', 'underline', 'strike', 'blockquote',
     'list', 'bullet', // Ensure these are included
     'indent',
-    'align', 'link', 'image'
+    'align', 'link',
+    'color', 'background',
 ];
 
 
