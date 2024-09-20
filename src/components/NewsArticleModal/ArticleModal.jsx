@@ -14,21 +14,26 @@ import { useState } from 'react';
 const modules = {
     toolbar: [
         [{ 'header': '1' }, { 'header': '2' }, { font: ['serif', 'monospace', 'roboto', 'lobster'] }],
-        [{ size: ['small', 'medium', 'large', 'huge'] }],
+        [{ size: ['small', 'medium', 'large', 'huge']}],
         ['bold', 'italic', 'underline', 'strike', 'blockquote'],
         [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
         [{ 'align': [] }],
+        [{ 'color': ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }, 
+        { 'background': ['#ffffff', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }],
         ['link'],
-        ['clean']
-    ],
-};
-
-const formats = [
+        ['clean'] // Clear formatting
+    ]
+  };
+  
+  const formats = [
     'header', 'font', 'size',
     'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
-    'align', 'link'
+    'list', 'bullet', // Ensure these are included
+    'indent',
+    'align', 'link',
+    'color', 'background',
 ];
+
 export function ArticlesModal({ isOpen, onClose, data }) {
     console.log("data", data)
     const [editorValue, setEditorValue] = useState('');
