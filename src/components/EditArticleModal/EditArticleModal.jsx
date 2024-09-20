@@ -21,7 +21,7 @@ const modules = {
         ['bold', 'italic', 'underline', 'strike', 'blockquote'],
         [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
         [{ 'align': [] }],
-        ['link', 'image'],
+        ['link'],
         ['clean'] // Clear formatting
     ]
   };
@@ -31,7 +31,7 @@ const modules = {
     'bold', 'italic', 'underline', 'strike', 'blockquote',
     'list', 'bullet', // Ensure these are included
     'indent',
-    'align', 'link', 'image'
+    'align', 'link'
 ];
 
 

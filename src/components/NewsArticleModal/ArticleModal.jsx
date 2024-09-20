@@ -18,7 +18,7 @@ const modules = {
         ['bold', 'italic', 'underline', 'strike', 'blockquote'],
         [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
         [{ 'align': [] }],
-        ['link', 'image'],
+        ['link'],
         ['clean']
     ],
 };
@@ -27,7 +27,7 @@ const formats = [
     'header', 'font', 'size',
     'bold', 'italic', 'underline', 'strike', 'blockquote',
     'list', 'bullet', 'indent',
-    'align', 'link', 'image'
+    'align', 'link'
 ];
 export function ArticlesModal({ isOpen, onClose, data }) {
     console.log("data", data)
