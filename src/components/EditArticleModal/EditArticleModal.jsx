@@ -16,32 +16,32 @@ import axios from 'axios';
 
 const modules = {
     toolbar: [
-        [{ 'header': '1' }, { 'header': '2' }, { font: ['serif', 'monospace', 'roboto', 'lobster'] }],
-        [{ size: ['small', 'medium', 'large', 'huge']}],
-        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-        [{ 'align': [] }],
-        [{ 'color': ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }, 
-        { 'background': ['#ffffff', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }],
-        ['link'],
-        ['clean'] // Clear formatting
+      [{ 'header': '1' }, { 'header': '2' }, { font: ['serif', 'monospace', 'roboto', 'lobster'] }],
+      [{ size: ['small', 'medium', 'large', 'huge'] }],
+      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+      [{ 'align': [] }],
+      [{ 'color': ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] },
+      { 'background': ['#ffffff', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }],
+      ['link', 'image'],
+      ['clean'] // Clear formatting
     ]
   };
   
   const formats = [
     'header', 'font', 'size',
     'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', // Ensure these are included
+    'list', 'bullet',
     'indent',
-    'align', 'link',
-    'color', 'background',
-];
-
+    'align', 'link', 'color', 'background',
+    'image' // Added 'image' format
+  ];
 
 
 
 const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
+    author: Yup.string().required('Author is required'),
     readTime: Yup.number()
         .min(1, 'Minimum read time is 1 minute')
         .max(5, 'Maximum read time is 5 minutes')
@@ -53,82 +53,17 @@ const validationSchema = Yup.object().shape({
 });
 
 
-// const fetchSubCategories = async () => {
-//     const token = localStorage.getItem('authToken');
-//     const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/article-subcategory/all`, {
-//       headers: {
-//         'Authorization': `Bearer ${token}`,
-//       },
-//     });
-
-//     if (!response.ok) {
-//       throw new Error('Network response was not ok');
-//     }
-//     return response.json();
-//   };
 
 export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
-    console.log("edit article component", propsData)
+    // console.log("edit article component", propsData)
     const [image, setImage] = useState(null);
+    const [loading, setLoading] = useState(false);
     const fileInputRef = useRef(null);
     const queryClient = useQueryClient();
 
-
-
-    // const { data: subCategories = [], error: subCategoriesError, isLoading: isSubCategoriesLoading } = useQuery({
-    //     queryKey: ['subCategories'],
-    //     queryFn: fetchSubCategories,
-    //   });
-
-
-    // const { articleDetail, error: articleDetailError, isLoading: isarticleDetailLoading } = useQuery({
-    //     queryKey: ['details', data?._id],  // Add the article ID to the query key
-    //     queryFn: async () => {
-    //         const token = localStorage.getItem('authToken');
-    //         const response = await fetch(`http://localhost:5001/api/admin/news-article/detail/${data?._id}`, {
-    //             headers: {
-    //                 'Authorization': `Bearer ${token}`,
-    //             },
-    //         });
-    //         console.log("response<><><>", response);
-    //         if (!response.ok) {
-    //             throw new Error('Network response was not ok');
-    //         }
-    //         const data = await response.json();
-    //         console.log('Fetched article Details:', data); // Debugging line
-    //         return data;
-    //     },
-    //     keepPreviousData: true,
-    // });
-
-
-    // const { articleDatail, error, isLoading } = useQuery({
-    //     queryKey: ['articles details'],
-    //     queryFn: async () => {
-    //       const token = localStorage.getItem('authToken');
-    //       const response = await fetch(`http://localhost:5001/api/admin/news-article/detail/${propsData?._id}`, {
-    //         method: 'POST',
-    //         headers: {
-    //           'Authorization': `Bearer ${token}`,
-    //         },
-    //       });
-    //       // console.log("response", response)
-    //       if (!response.ok) {
-    //         throw new Error('Network response was not ok');
-    //       }
-    //       console.log("reposne", response)
-    //       return response.json();
-    //     },
-    //     keepPreviousData: true,
-
-    //   });
-
-
-
-
-
     const mutation = useMutation({
         mutationFn: async (newArticle) => {
+            console.log("newArticle", newArticle)
             const token = localStorage.getItem('authToken');
             const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/update`, {
                 method: 'PUT',
@@ -138,6 +73,8 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                 body: newArticle,
             });
 
+            console.log("response", response)
+
             if (!response.ok) {
                 throw new Error('Failed to update article');
             }
@@ -145,18 +82,17 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
             return response.json();
         },
         onSuccess: () => {
+            setLoading(false);
             queryClient.invalidateQueries('articles'); // Assuming you have a query with this key
             onClose();
         },
         onError: (error) => {
+            setLoading(false);
             console.error('Error creating article:', error);
         },
     });
 
 
-
-
-    // console.log("articleDatail", articleDatail)
 
     const formik = useFormik({
         initialValues: {
@@ -165,11 +101,13 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
             content: propsData?.description,
             image: propsData?.profilePicture,
             type: propsData?.type,
+            author: propsData?.author,
             // subCategory: propsData?.category,
         },
         validationSchema,
         enableReinitialize: true,
         onSubmit: (values) => {
+            setLoading(true);
             const date = new Date();
             const formattedDate = date.toISOString();
             const formData = new FormData();
@@ -181,8 +119,10 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
             formData.append('mediatype', 'image');
             formData.append('publishedTime', formattedDate);
             formData.append('type', values.type); // New field
+            formData.append('author', values.author); // New field
+
             // formData.append('subCategory', values.subCategory); // New field
-            // console.log("adfasdfasdf")
+            console.log("adfasdfasdf", propsData?._id)
             mutation.mutate(formData);
         },
     });
@@ -273,7 +213,21 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                                             </div>
                                         </div>
                                         {formik.errors.image && <div className="text-red-500 text-sm">{formik.errors.image}</div>}
-                                        <div className='font-normal text-[#75767F] mt-2 text-[16px]'> Posted By: Admin </div>
+                                        <div className='flex items-center justify-between w-full'>
+                                            <div className=' flex items-center text-[#75767F] text-[16px]'>
+                                                <span>Posted By:</span>
+                                            </div>
+                                            <div className='flex items-center'>
+                                                <Input
+                                                    type="text"
+                                                    name="author"
+                                                    onChange={formik.handleChange}
+                                                    value={formik.values.author}
+
+                                                />
+                                            </div>
+                                        </div>
+                                        {formik.errors.author && <div className="text-red-500 text-sm">{formik.errors.author}</div>}
                                         <div className='font-medium text-[#75767F] text-[20px]'>
                                             <Input
                                                 type="text"
@@ -312,7 +266,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                                                 value={formik.values.content}
                                                 onChange={value => formik.setFieldValue('content', value)}
                                                 modules={modules}
-                                               
+
                                                 placeholder="Write something awesome..."
                                             />
                                             {formik.errors.content && <div className="text-red-500 text-sm">{formik.errors.content}</div>}
@@ -364,8 +318,34 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                                             {formik.errors.subCategory && <div className="text-red-500 text-sm">{formik.errors.subCategory}</div>}
                                         </div> */}
 
-                                        <Button type="submit" className="mt-4" disabled={mutation.isLoading}>
-                                            {mutation.isLoading ? 'Submitting...' : 'Submit'}
+                                        <Button type="submit" className="mt-4 flex items-center justify-center" disabled={loading}>
+                                            {loading ? (
+                                                <div className="flex items-center">
+                                                    <svg
+                                                        className="animate-spin h-5 w-5 mr-2 text-white"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <circle
+                                                            className="opacity-25"
+                                                            cx="12"
+                                                            cy="12"
+                                                            r="10"
+                                                            stroke="currentColor"
+                                                            strokeWidth="4"
+                                                        ></circle>
+                                                        <path
+                                                            className="opacity-75"
+                                                            fill="currentColor"
+                                                            d="M4 12a8 8 0 018-8v8H4z"
+                                                        ></path>
+                                                    </svg>
+                                                    Submitting...
+                                                </div>
+                                            ) : (
+                                                'Submit'
+                                            )}
                                         </Button>
                                         {mutation.isError && <div className="text-red-500 text-sm">Error: {mutation.error?.message}</div>}
                                     </div>

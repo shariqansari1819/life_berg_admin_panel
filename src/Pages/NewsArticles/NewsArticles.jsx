@@ -325,7 +325,8 @@ export function NewsArticles() {
         currentStreak: article?.currentStreak,
         profilePicture: article?.media?.url,
         subCategory: article?.subCategory?.name,
-        category: article?.subCategory?._id
+        category: article?.subCategory?._id,
+        author: article?.author,
         // videos: user?.videos,
         // likes: user?.likes,
         // profileStatus: user?.profileStatus

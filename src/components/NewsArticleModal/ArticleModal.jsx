@@ -35,7 +35,7 @@ const modules = {
 ];
 
 export function ArticlesModal({ isOpen, onClose, data }) {
-    console.log("data", data)
+    // console.log("data---", data)
     const [editorValue, setEditorValue] = useState('');
 
 
@@ -98,7 +98,11 @@ export function ArticlesModal({ isOpen, onClose, data }) {
                                             <Upload className="w-4 h-4 text-[#75767F]" />
                                         </div>
                                     </div>
-                                    <div className='font-normal text-[#75767F] mt-2 text-[16px]'> Posted By: Admin </div>
+                                    <div className='flex items-center justify-between w-full py-2'>
+                                        <div className=' flex items-center text-[#75767F] text-[16px]'> Posted By: </div>
+                                        <div> <span className='text-[#75767F] text-[16px]'>  {data?.author} </span> </div>
+                                    </div>
+
                                     <div className='font-medium text-[#75767F] text-[20px]'>{data?.title}</div>
                                     <div className='flex items-center justify-between w-full py-2'>
                                         <div className=' flex items-center text-[#75767F] text-[16px]'> <span > <CalendarClock className='text-[16px]' /> </span> &nbsp; <span>Upload date:</span> </div>
