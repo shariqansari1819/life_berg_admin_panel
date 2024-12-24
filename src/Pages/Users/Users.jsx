@@ -52,7 +52,7 @@ export function Users() {
   const { darkMode } = useSelector((state) => state.darkMode);
   const [globalFilter, setGlobalFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // State for items per page
+  const [itemsPerPage, setItemsPerPage] = useState(50); // State for items per page
   const [deleteObject, setDeleteObject] = useState(null);
   const [alertOpen, setAlertOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
