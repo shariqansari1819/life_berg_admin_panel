@@ -112,11 +112,11 @@ export function Users() {
         header: 'Vocation',
         accessorKey: 'vocation',
       },
-      // {
-      //   id:'profileStatus',
-      //   header:"Profile Status",
-      //   accessorKey:"profileStatus"
-      // }
+      {
+        id:'joined',
+        header:"Joined",
+        accessorKey:"joined"
+      }
 
     ],
     []
@@ -307,7 +307,8 @@ export function Users() {
         // profileStatus: user?.profileStatus
         profileStatus: user?.profileStatus,
         subscriptionStatus: user?.subscriptionStatus,
-        profilePicture: user?.profilePicture
+        profilePicture: user?.profilePicture,
+        joined: new Date(user?.createdAt).toLocaleDateString()
 
       }));
     }

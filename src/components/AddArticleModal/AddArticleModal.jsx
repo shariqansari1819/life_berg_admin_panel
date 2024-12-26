@@ -52,7 +52,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
     author: Yup.string().required('Author is required'),
     readTime: Yup.number()
       .min(1, 'Minimum read time is 1 minute')
-      .max(5, 'Maximum read time is 5 minutes')
+      .max(30, 'Maximum read time is 30 minutes')
       .required('Estimated read time is required'),
     content: Yup.string().required('Content is required'),
     image: Yup.mixed().required('Image is required'),

@@ -89,7 +89,7 @@ export function NewsArticles() {
         accessorKey: 'title',
         cell: ({ row }) => {
           const profilePicture = row.original.profilePicture;
-          const profilePictureUrl = profilePicture ?  `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${profilePicture}`
+          const profilePictureUrl = profilePicture ? `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${profilePicture}`
             : avatar;
           return (
             <div className="flex items-center gap-2">
@@ -98,7 +98,12 @@ export function NewsArticles() {
                 alt={`${row.original.title}'s profile`}
                 className="w-8 h-8 rounded-full object-cover"
               />
-              <span>{row.original.title}</span>
+              <span
+                className="truncate w-[150px] whitespace-nowrap overflow-hidden"
+                title={row.original.title}
+              >
+                {row.original.title}
+              </span>
             </div>
           );
         },
@@ -626,7 +631,7 @@ export function NewsArticles() {
         onClose={() => setIsEditModalOpen(false)}
       />
 
-      
+
 
     </div>
   );
