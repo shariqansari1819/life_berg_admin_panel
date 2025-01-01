@@ -187,5 +187,130 @@ h2 {
 
 .ql-container {
   
-  height: 100px;
+  height: 300px;
 }
+
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before  {
+  content: '12px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before {
+  content: '14px';
+  font-size: 14px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before {
+  content: '16px';
+  font-size: 16px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="18px"]::before {
+  content: '18px';
+  font-size: 18px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="20px"]::before {
+  content: '20px';
+  font-size: 20px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before {
+  content: '24px';
+  font-size: 24px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before {
+  content: '32px';
+  font-size: 32px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="48px"]::before {
+  content: '48px';
+  font-size: 48px !important;
+}
+
+
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="8px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="8px"]::before {
+  content: '8px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="9px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="9px"]::before {
+  content: '9px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="10px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="10px"]::before {
+  content: '10px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="12px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before {
+  content: '12px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="14px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before {
+  content: '14px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="16px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before {
+  content: '16px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="20px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="20px"]::before {
+  content: '20px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="24px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before {
+  content: '24px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="32px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before {
+  content: '32px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="42px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="42px"]::before {
+  content: '42px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="54px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="54px"]::before {
+  content: '54px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="68px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="68px"]::before {
+  content: '68px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="84px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="84px"]::before {
+  content: '84px';
+  font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="98px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="98px"]::before {
+  content: '98px';
+  font-size: 12px !important;
+}
+
+
+
+
+
+/* .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before {
+  content: 'Normal';
+  font-size: 14px !important;
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before {
+  content: '16px';
+  font-size: 16px !important;
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="18px"]::before {
+  content: 'Huge';
+  font-size: 18px !important;
+} */

@@ -499,8 +499,8 @@ export function Users() {
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {{
-                          asc: <ChevronUpIcon width={16} height={16} />,
-                          desc: <ChevronDownIcon width={32} height={32} />,
+                         asc: <ChevronUpIcon width={12} height={12} style={{marginLeft:"10px"}} />,
+                         desc: <ChevronDownIcon width={12} height={12} style={{marginLeft:"10px"}} />,
                         }[header.column.getIsSorted()] ?? null}
                       </div>
                     )}

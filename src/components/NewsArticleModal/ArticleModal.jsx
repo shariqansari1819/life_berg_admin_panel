@@ -7,31 +7,52 @@ import { Separator } from '@radix-ui/react-dropdown-menu';
 import moment from 'moment';
 import avatar from "../../assets/avatar.jpg"
 import { Button } from '../Button/Button';
-import ReactQuill from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // import styles
 import { useState } from 'react';
 
+const fontSizeArr = ['8px','9px','10px','12px','14px','16px','20px','24px','32px','42px','54px','68px','84px','98px'];
+
+var Size = Quill.import('attributors/style/size');
+Size.whitelist = fontSizeArr;
+Quill.register(Size, true);
 const modules = {
-    toolbar: [
-        [{ 'header': '1' }, { 'header': '2' }, { font: ['serif', 'monospace', 'roboto', 'lobster'] }],
-        [{ size: ['small', 'medium', 'large', 'huge']}],
-        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-        [{ 'align': [] }],
-        [{ 'color': ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }, 
-        { 'background': ['#ffffff', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }],
-        ['link'],
-        ['clean'] // Clear formatting
-    ]
-  };
-  
-  const formats = [
-    'header', 'font', 'size',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', // Ensure these are included
-    'indent',
-    'align', 'link',
-    'color', 'background',
+  toolbar: {
+    container: [
+      [{ header: '1' }, { header: '2' }, { font: ['serif', 'monospace', 'roboto', 'lobster'] }],
+      
+        [{ 'size': fontSizeArr }]
+      ,
+      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+      [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+      [{ align: [] }],
+      [
+        { color: ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] },
+        { background: ['#ffffff', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] },
+      ],
+      ['link', 'image'],
+      ['clean'], // Clear formatting
+    ],
+  },
+};
+
+const formats = [
+  'header',
+  'font',
+  'size', // Ensure 'size' format is included
+  'bold',
+  'italic',
+  'underline',
+  'strike',
+  'blockquote',
+  'list',
+  'bullet',
+  'indent',
+  'align',
+  'link',
+  'color',
+  'background',
+  'image', // Added 'image' format
 ];
 
 export function ArticlesModal({ isOpen, onClose, data }) {

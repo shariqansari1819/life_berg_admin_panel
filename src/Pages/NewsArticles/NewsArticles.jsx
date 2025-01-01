@@ -56,7 +56,7 @@ export function NewsArticles() {
   const { darkMode } = useSelector((state) => state.darkMode);
   const [globalFilter, setGlobalFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // State for items per page
+  const [itemsPerPage, setItemsPerPage] = useState(50); // State for items per page
   const [deleteObject, setDeleteObject] = useState(null);
   const [alertOpen, setAlertOpen] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
@@ -65,6 +65,7 @@ export function NewsArticles() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [order, setOrder] = useState('desc')
   const navigate = useNavigate();
 
 
@@ -287,10 +288,10 @@ export function NewsArticles() {
   }
 
   const { data, error, isLoading } = useQuery({
-    queryKey: ['articles', currentPage, itemsPerPage],
+    queryKey: ['articles', currentPage, itemsPerPage, order],
     queryFn: async () => {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/all?page=${currentPage}&limit=${itemsPerPage}`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/all?page=${currentPage}&limit=${itemsPerPage}&filter=${order}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -486,6 +487,20 @@ export function NewsArticles() {
   return (
     <div>
       <div className="flex justify-end items-center m-2  gap-2">
+        <div className=" w-full">
+          <select
+            id="type"
+            name="type"
+            value={order}
+            onChange={(e) => setOrder(e.target.value)}
+            className="text-muted-foreground w-full py-2 border-x border-y focus:outline-none"
+          >
+            <option value="" label="Search By Order..." />
+            <option value="asc" label="Old to New " />
+            <option value="desc" label="New to Old" />
+          </select>
+          {/* {formik.errors.type && <div className="text-red-500 text-sm">{formik.errors.type}</div>} */}
+        </div>
 
         <div className={`w-full max-w-sm ${darkMode ? 'dark' : ""}`}>
           <Input
@@ -527,13 +542,13 @@ export function NewsArticles() {
                       <div
                         {...{
                           onClick: header.column.getToggleSortingHandler(),
-                          style: { cursor: 'pointer', display: 'flex' },
+                          style: { cursor: 'pointer', display: 'flex', justifyContent: "center", alignItems: "center" },
                         }}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {{
-                          asc: <ChevronUpIcon width={16} height={16} />,
-                          desc: <ChevronDownIcon width={32} height={32} />,
+                          asc: <ChevronUpIcon width={12} height={12} style={{ marginLeft: "10px" }} />,
+                          desc: <ChevronDownIcon width={12} height={12} style={{ marginLeft: "10px" }} />,
                         }[header.column.getIsSorted()] ?? null}
                       </div>
                     )}

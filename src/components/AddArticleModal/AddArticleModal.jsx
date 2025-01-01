@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useState, useRef } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import ReactQuill from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import avatar from "../../assets/avatar.jpg";
 import { Button } from '../Button/Button';
@@ -14,27 +14,48 @@ import { cn } from '../../lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
+const fontSizeArr = ['8px','9px','10px','12px','14px','16px','20px','24px','32px','42px','54px','68px','84px','98px'];
+
+var Size = Quill.import('attributors/style/size');
+Size.whitelist = fontSizeArr;
+Quill.register(Size, true);
 const modules = {
-  toolbar: [
-    [{ 'header': '1' }, { 'header': '2' }, { font: ['serif', 'monospace', 'roboto', 'lobster'] }],
-    [{ size: ['small', 'medium', 'large', 'huge'] }],
-    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-    [{ 'align': [] }],
-    [{ 'color': ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] },
-    { 'background': ['#ffffff', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }],
-    ['link', 'image'],
-    ['clean'] // Clear formatting
-  ]
+  toolbar: {
+    container: [
+      [{ header: '1' }, { header: '2' }, { font: ['serif', 'monospace', 'roboto', 'lobster'] }],
+      
+        [{ 'size': fontSizeArr }]
+      ,
+      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+      [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+      [{ align: [] }],
+      [
+        { color: ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] },
+        { background: ['#ffffff', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] },
+      ],
+      ['link', 'image'],
+      ['clean'], // Clear formatting
+    ],
+  },
 };
 
 const formats = [
-  'header', 'font', 'size',
-  'bold', 'italic', 'underline', 'strike', 'blockquote',
-  'list', 'bullet',
+  'header',
+  'font',
+  'size', // Ensure 'size' format is included
+  'bold',
+  'italic',
+  'underline',
+  'strike',
+  'blockquote',
+  'list',
+  'bullet',
   'indent',
-  'align', 'link', 'color', 'background',
-  'image' // Added 'image' format
+  'align',
+  'link',
+  'color',
+  'background',
+  'image', // Added 'image' format
 ];
 
 
@@ -149,7 +170,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
       <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-30" />
       <Dialog.Content className={cn(
         "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md",
-        "dark:bg-gray-800 dark:text-muted w-9/12"
+        "dark:bg-gray-800 dark:text-muted w-10/12 h-[95vh]"
       )}>
         <Dialog.Description>
           <form onSubmit={formik.handleSubmit}>
@@ -223,10 +244,10 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
                           type="number"
                           name="readTime"
                           min="1"
-                          max="5"
+                          max="30"
                           onChange={formik.handleChange}
                           value={formik.values.readTime}
-                          className="h-8"
+                          className="h-8 w-50"
                         />
                         &nbsp; <span> min </span>
                       </div>
