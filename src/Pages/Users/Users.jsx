@@ -455,7 +455,7 @@ export function Users() {
   return (
     <div>
       <div className="flex justify-end items-center m-2">
-      <div className=" w-full">
+      <div className="w-full mr-2">
           <select
             id="type"
             name="type"
