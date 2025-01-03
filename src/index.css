@@ -190,7 +190,6 @@ h2 {
   height: 500px;
 }
 
-
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before  {
   content: '12px';
   font-size: 12px !important;
