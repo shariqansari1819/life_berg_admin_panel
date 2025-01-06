@@ -1,17 +1,31 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../../components/Table/Table";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "../../components/Table/Table";
 import { Button } from "../../components/Button/Button";
-import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from "../../components/Pagination/Pagination";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationLink,
+  PaginationNext,
+} from "../../components/Pagination/Pagination";
 import {
   useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   flexRender,
-} from '@tanstack/react-table';
+} from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { Input } from "../../components/Input/Input";
-import avatar from "../../assets/avatar.jpg"
+import avatar from "../../assets/avatar.jpg";
 // import {
 //   Select,
 //   SelectGroup,
@@ -24,25 +38,29 @@ import avatar from "../../assets/avatar.jpg"
 // } from '../../Components/Select/Select';
 // import * as SelectPrimitive from "@radix-ui/react-select";
 // import { Check, ChevronDown, ChevronUp, EyeIcon, FilePenIcon } from "lucide-react";
-import { useSelector } from 'react-redux';
-import { Select } from '../../components/Select/Select';
-import { SelectTrigger } from '../../components/Select/SelectTrigger';
-import { SelectContent } from '../../components/Select/SelectContent';
-import { SelectItem } from '../../components/Select/SelectItem';
+import { useSelector } from "react-redux";
+import { Select } from "../../components/Select/Select";
+import { SelectTrigger } from "../../components/Select/SelectTrigger";
+import { SelectContent } from "../../components/Select/SelectContent";
+import { SelectItem } from "../../components/Select/SelectItem";
 // import { SelectSeparator } from '../../Components/Select/SelectSeparator';
 // import { SelectLabel } from '../../Components/Select/SelectLabel';
 import { SelectValue } from "../../components/Select/SelectValue";
 import Alert from "../../components/Alert/Alert";
-import { TrashIcon } from '../../components/Icons/Icons';
-import { ChevronDownIcon, ChevronUpIcon, SearchIcon, VerticalEllipsisIcon } from '../../icons/icons';
+import { TrashIcon } from "../../components/Icons/Icons";
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  SearchIcon,
+  VerticalEllipsisIcon,
+} from "../../icons/icons";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import { NavLink, useNavigate } from 'react-router-dom';
-import { UserDetailsModal } from '../../components/user-detail-modal/UserDetails';
-import moment from 'moment';
-import { ArticlesModal } from '../../components/NewsArticleModal/ArticleModal';
-import { AddArticlesModal } from '../../components/AddArticleModal/AddArticleModal';
-import { EditArticlesModal } from '../../components/EditArticleModal/EditArticleModal';
-
+import { NavLink, useNavigate } from "react-router-dom";
+import { UserDetailsModal } from "../../components/user-detail-modal/UserDetails";
+import moment from "moment";
+import { ArticlesModal } from "../../components/NewsArticleModal/ArticleModal";
+import { AddArticlesModal } from "../../components/AddArticleModal/AddArticleModal";
+import { EditArticlesModal } from "../../components/EditArticleModal/EditArticleModal";
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
@@ -54,7 +72,7 @@ const DropdownMenuLabel = DropdownMenuPrimitive.Label;
 export function NewsArticles() {
   const queryClient = useQueryClient();
   const { darkMode } = useSelector((state) => state.darkMode);
-  const [globalFilter, setGlobalFilter] = useState('');
+  const [globalFilter, setGlobalFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(50); // State for items per page
   const [deleteObject, setDeleteObject] = useState(null);
@@ -65,11 +83,8 @@ export function NewsArticles() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [order, setOrder] = useState('desc')
+  const [order, setOrder] = useState("desc");
   const navigate = useNavigate();
-
-
-
 
   function isValidUrl(string) {
     try {
@@ -80,17 +95,18 @@ export function NewsArticles() {
     }
   }
 
-
   const columns = useMemo(
     () => [
-
       {
-        id: 'title',
-        header: 'POSTNAME',
-        accessorKey: 'title',
+        id: "title",
+        header: "POSTNAME",
+        accessorKey: "title",
         cell: ({ row }) => {
           const profilePicture = row.original.profilePicture;
-          const profilePictureUrl = profilePicture ? `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${profilePicture}`
+          const profilePictureUrl = profilePicture
+            ? `${
+                import.meta.env.VITE_APP_BASE_URL
+              }/uploads/images/${profilePicture}`
             : avatar;
           return (
             <div className="flex items-center gap-2">
@@ -120,14 +136,14 @@ export function NewsArticles() {
       //   accessorKey: 'title',
       // },
       {
-        id: 'type',
-        header: 'Category',
-        accessorKey: 'type'
+        id: "type",
+        header: "Category",
+        accessorKey: "type",
       },
       {
-        id: 'readTime',
-        header: 'Read Time',
-        accessorKey: 'readTime'
+        id: "readTime",
+        header: "Read Time",
+        accessorKey: "readTime",
       },
       // {
       //   id: 'subCategory',
@@ -135,102 +151,100 @@ export function NewsArticles() {
       //   accessorKey: 'subCategory'
       // },
       {
-        id: 'publishedTime',
-        header: 'Uploaded At',
-        accessorKey: 'publishedTime',
+        id: "publishedTime",
+        header: "Uploaded At",
+        accessorKey: "publishedTime",
         cell: ({ row }) => {
-
-          return (
-            moment(row.original.publishedTime).format('MMM D, YYYY')
-          );
+          return moment(row.original.publishedTime).format("MMM D, YYYY");
         },
-      }
+      },
       // {
       //   id:'profileStatus',
       //   header:"Profile Status",
       //   accessorKey:"profileStatus"
       // }
-
     ],
     []
   );
 
   const handleView = (row) => {
     // console.log("row for view", row.original)
-    setSelectedArticle(row?.original)
+    setSelectedArticle(row?.original);
     setIsModalOpen(true);
   };
 
   const handleEdit = (row) => {
     const updateUserData = {
       userId: row?.original?._id,
-      "status": "active",
-    }
+      status: "active",
+    };
     updateUserMutation.mutate(updateUserData);
   };
 
   const handleDelete = (row) => {
-    console.log("row", row.original)
-    setDeleteObject(row.original)
-    setAlertOpen(!alertOpen)
+    console.log("row", row.original);
+    setDeleteObject(row.original);
+    setAlertOpen(!alertOpen);
   };
 
   const deleteArticleMutation = useMutation({
     mutationFn: async (articleId) => {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/delete `, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ id: articleId }),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error deleting video');
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['videos', currentPage, itemsPerPage]);
-      setAlertOpen(false);
-    },
-    onError: (error) => {
-      console.error('Error deleting video:', error.message);
-    },
-  });
-
-
-  const updateUserMutation = useMutation({
-    mutationFn: async (data) => {
-      const token = localStorage.getItem('authToken');
-      // console.log("data.original", data._id)
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/user/update-status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-      }
-
+      const token = localStorage.getItem("authToken");
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/news-article/delete `,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ id: articleId }),
+        }
       );
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Error updating user');
+        throw new Error(errorData.message || "Error deleting video");
       }
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['videos', currentPage, itemsPerPage]);
+      queryClient.invalidateQueries(["videos", currentPage, itemsPerPage]);
       setAlertOpen(false);
     },
     onError: (error) => {
-      console.error('Error deleting video:', error.message);
+      console.error("Error deleting video:", error.message);
     },
   });
 
+  const updateUserMutation = useMutation({
+    mutationFn: async (data) => {
+      const token = localStorage.getItem("authToken");
+      // console.log("data.original", data._id)
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/user/update-status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        }
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error updating user");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["videos", currentPage, itemsPerPage]);
+      setAlertOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error deleting video:", error.message);
+    },
+  });
 
   // const handleSuspend = (row) => {
   //   const updateUserData = {
@@ -241,15 +255,12 @@ export function NewsArticles() {
 
   // }
 
-
-
   const handleEditArticle = (row) => {
     // console.log("data-------<<-->>", row)
     setSelectedEditArticle(row);
-    setIsEditModalOpen(true)
+    setIsEditModalOpen(true);
     // updateUserMutation.mutate(updateUserData);
-  }
-
+  };
 
   // const addNewArticle = (row, data) => {
   //   const updateUserData = {
@@ -259,69 +270,63 @@ export function NewsArticles() {
   //   updateUserMutation.mutate(updateUserData);
   // }
 
-
   const handleAdd = () => {
     // console.log("row for view", row.original)
     // setSelectedArticle(row?.original)
     setIsAddModalOpen(true);
   };
 
-
-
   const handleSubUpdate = (row, data) => {
     const updateUserData = {
       userId: row?._id,
-      "subscriptionStatus": data
-    }
+      subscriptionStatus: data,
+    };
     updateUserMutation.mutate(updateUserData);
-  }
-
-
-
-
-
+  };
 
   const deleteVideo = () => {
     if (deleteObject) {
       deleteArticleMutation.mutate(deleteObject._id);
     }
-  }
+  };
 
   const { data, error, isLoading } = useQuery({
-    queryKey: ['articles', currentPage, itemsPerPage, order],
+    queryKey: ["articles", currentPage, itemsPerPage, order],
     queryFn: async () => {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/all?page=${currentPage}&limit=${itemsPerPage}&filter=${order}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const token = localStorage.getItem("authToken");
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_APP_API_URL
+        }/news-article/all?page=${currentPage}&limit=${itemsPerPage}&filter=${order}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response?.status == 401) {
         localStorage.removeItem("authToken");
-        navigate(0)
-        navigate("/login")
-      }
-      else if (response?.status == 400) {
+        navigate(0);
+        navigate("/login");
+      } else if (response?.status == 400) {
         localStorage.removeItem("authToken");
-        navigate(0)
-        navigate("/login")
-      }
-      else if (response?.status == 500) {
+        navigate(0);
+        navigate("/login");
+      } else if (response?.status == 500) {
         localStorage.removeItem("authToken");
-        navigate(0)
-        navigate("/login")
+        navigate(0);
+        navigate("/login");
       } else {
         return response.json();
       }
     },
     keepPreviousData: true,
-
   });
 
   const tableData = useMemo(() => {
-    console.log("data.success", data?.message?.newsArticles?.docs)
+    console.log("data.success", data?.message?.newsArticles?.docs);
     if (data && data.success) {
-      return data?.message?.newsArticles?.docs.map(article => ({
+      return data?.message?.newsArticles?.docs.map((article) => ({
         _id: article._id,
         title: article?.title,
         description: article?.description,
@@ -338,7 +343,6 @@ export function NewsArticles() {
         // profileStatus: user?.profileStatus
         // profileStatus: article?.profileStatus,
         // subscriptionStatus: article?.subscriptionStatus,
-
       }));
     }
     return [];
@@ -353,74 +357,75 @@ export function NewsArticles() {
 
   const table = useReactTable({
     data: tableData,
-    columns: useMemo(() => [
-      ...columns,
-      // {
-      //   id: 'actions',
-      //   header: 'Actions',
-      //   cell: ({ row }) => (
+    columns: useMemo(
+      () => [
+        ...columns,
+        // {
+        //   id: 'actions',
+        //   header: 'Actions',
+        //   cell: ({ row }) => (
 
-      //     <div className="flex items-center gap-2">
-      //       {
-      //         row?.original?.profileStatus === 'suspended' ? <Button onClick={() => handleEdit(row)} variant="ghost" className="bg-green-900 opacity:0.2 text-white hover:bg-green-400 hover:text-white" >
-      //           <span>active</span>
-      //         </Button> : <Button onClick={() => handleSuspend(row)} variant="ghost" className="bg-red-900 opacity:0.2 text-white hover:bg-red-400 hover:text-white" >
+        //     <div className="flex items-center gap-2">
+        //       {
+        //         row?.original?.profileStatus === 'suspended' ? <Button onClick={() => handleEdit(row)} variant="ghost" className="bg-green-900 opacity:0.2 text-white hover:bg-green-400 hover:text-white" >
+        //           <span>active</span>
+        //         </Button> : <Button onClick={() => handleSuspend(row)} variant="ghost" className="bg-red-900 opacity:0.2 text-white hover:bg-red-400 hover:text-white" >
 
-      //           <span > suspend</span>
-      //         </Button>
-      //       }
+        //           <span > suspend</span>
+        //         </Button>
+        //       }
 
-
-      //     </div>
-      //   ),
-      // },
-      {
-        id: 'moredetails',
-        header: 'More Details',
-        cell: ({ row }) => (
-          <div className="flex items-center">
-            <span className="cursor-pointer border-blue-600 border-2 text-blue-600 px-4 py-1 rounded-full" onClick={() => handleView(row)}>view more details</span>
-          </div>
-        ),
-      },
-      {
-        id: 'Actions',
-        header: 'Actions',
-        cell: ({ row }) => (
-
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="rounded-full transition-colors  duration-300 text-foreground"
-                >
-                  <VerticalEllipsisIcon width={16} height={16} />
-
-
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                sideOffset="1"
-                align="end"
-                className="z-50 min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-md transition-colors duration-300 bg-white  text-gray-800"
+        //     </div>
+        //   ),
+        // },
+        {
+          id: "moredetails",
+          header: "More Details",
+          cell: ({ row }) => (
+            <div className="flex items-center">
+              <span
+                className="cursor-pointer border-blue-600 border-2 text-blue-600 px-4 py-1 rounded-full"
+                onClick={() => handleView(row)}
               >
-                <DropdownMenuItem inset="4" className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
+                view more details
+              </span>
+            </div>
+          ),
+        },
+        {
+          id: "Actions",
+          header: "Actions",
+          cell: ({ row }) => (
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="rounded-full transition-colors  duration-300 text-foreground"
+                  >
+                    <VerticalEllipsisIcon width={16} height={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  sideOffset="1"
+                  align="end"
+                  className="z-50 min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-md transition-colors duration-300 bg-white  text-gray-800"
+                >
+                  {/* <DropdownMenuItem inset="4" className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
                   <NavLink to="/profile">
                     <span>Actions</span>
                   </NavLink>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
-                <DropdownMenuItem inset="4" className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
-                  <span
+                <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" /> */}
+                  <DropdownMenuItem
                     onClick={() => handleEditArticle(row?.original)}
-                  >Edit this content</span>
-                  {/* : <span onClick={() => handleProfileUpdate(row?.original, "suspended")}> Suspend </span> */}
-
-
-
-                </DropdownMenuItem>
-                {/*<DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
+                    inset="4"
+                    className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-4 pr-8 justify-start"
+                  >
+                    <span>Edit this content</span>
+                    {/* : <span onClick={() => handleProfileUpdate(row?.original, "suspended")}> Suspend </span> */}
+                  </DropdownMenuItem>
+                  {/*<DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
                  <DropdownMenuItem inset="4" className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
                   <span
                     onClick={() => handleAdd(row?.original)}
@@ -430,18 +435,16 @@ export function NewsArticles() {
 
 
                 </DropdownMenuItem> */}
-                <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
+                  <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
 
-                <DropdownMenuItem className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
-                  <span
+                  <DropdownMenuItem
                     onClick={() => handleDelete(row)}
+                    className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-4 pr-8 justify-start"
                   >
-                    Delete this content
-                  </span>
-                  {/* : <span onClick={() => handleSubUpdate(row?.original, "inactive")}> Inactivate Payment </span> */}
-
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
+                    <span>Delete this content</span>
+                    {/* : <span onClick={() => handleSubUpdate(row?.original, "inactive")}> Inactivate Payment </span> */}
+                  </DropdownMenuItem>
+                  {/* <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
 
                 <DropdownMenuItem className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
 
@@ -450,13 +453,15 @@ export function NewsArticles() {
                   >Archive this content</span>
 
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        ),
-      }
-    ], [columns]),
+                <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" /> */}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ),
+        },
+      ],
+      [columns]
+    ),
     state: {
       globalFilter,
     },
@@ -464,7 +469,7 @@ export function NewsArticles() {
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    globalFilterFn: 'includesString',
+    globalFilterFn: "includesString",
   });
 
   if (isLoading) return <div className="text-center">Loading...</div>;
@@ -473,13 +478,21 @@ export function NewsArticles() {
   const getPaginationRange = () => {
     const maxVisiblePages = 3;
     if (totalPages <= maxVisiblePages) {
-      return [...Array(totalPages).keys()].map(i => i + 1);
+      return [...Array(totalPages).keys()].map((i) => i + 1);
     }
-    const startPage = Math.max(currentPage - Math.floor(maxVisiblePages / 2), 1);
+    const startPage = Math.max(
+      currentPage - Math.floor(maxVisiblePages / 2),
+      1
+    );
     const endPage = Math.min(startPage + maxVisiblePages - 1, totalPages);
     const adjustedStartPage = Math.max(endPage - maxVisiblePages + 1, 1);
-    const adjustedEndPage = Math.min(adjustedStartPage + maxVisiblePages - 1, totalPages);
-    return [...Array(adjustedEndPage - adjustedStartPage + 1).keys()].map(i => i + adjustedStartPage);
+    const adjustedEndPage = Math.min(
+      adjustedStartPage + maxVisiblePages - 1,
+      totalPages
+    );
+    return [...Array(adjustedEndPage - adjustedStartPage + 1).keys()].map(
+      (i) => i + adjustedStartPage
+    );
   };
 
   const paginationRange = getPaginationRange();
@@ -502,18 +515,21 @@ export function NewsArticles() {
           {/* {formik.errors.type && <div className="text-red-500 text-sm">{formik.errors.type}</div>} */}
         </div>
 
-        <div className={`w-full max-w-sm ${darkMode ? 'dark' : ""}`}>
+        <div className={`w-full max-w-sm ${darkMode ? "dark" : ""}`}>
           <Input
             type="search"
             icons={<SearchIcon width={16} height={16} strokeColor="black" />}
             iconPosition="left"
-            value={globalFilter ?? ''}
+            value={globalFilter ?? ""}
             onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder="Search Here"
             className="w-full max-w-sm"
           />
         </div>
-        <Button className="rounded-none bg-sidebar" onClick={() => handleAdd()}> Add New Content </Button>
+        <Button className="rounded-none bg-sidebar" onClick={() => handleAdd()}>
+          {" "}
+          Add New Content{" "}
+        </Button>
         {/*<div className={`w-full max-w-sm ${darkMode ? 'dark' : ""}`}>
           <Select onValueChange={setItemsPerPage} className="w-full">
             <SelectTrigger className="placeholder" placeholder="Select an option">
@@ -535,20 +551,40 @@ export function NewsArticles() {
         <Table>
           <TableHeader>
             <TableRow>
-              {table?.getHeaderGroups()?.map(headerGroup =>
-                headerGroup.headers.map(header => (
+              {table?.getHeaderGroups()?.map((headerGroup) =>
+                headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
                     {header.isPlaceholder ? null : (
                       <div
                         {...{
                           onClick: header.column.getToggleSortingHandler(),
-                          style: { cursor: 'pointer', display: 'flex', justifyContent: "center", alignItems: "center" },
+                          style: {
+                            cursor: "pointer",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          },
                         }}
                       >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                         {{
-                          asc: <ChevronUpIcon width={12} height={12} style={{ marginLeft: "10px" }} />,
-                          desc: <ChevronDownIcon width={12} height={12} style={{ marginLeft: "10px" }} />,
+                          asc: (
+                            <ChevronUpIcon
+                              width={12}
+                              height={12}
+                              style={{ marginLeft: "10px" }}
+                            />
+                          ),
+                          desc: (
+                            <ChevronDownIcon
+                              width={12}
+                              height={12}
+                              style={{ marginLeft: "10px" }}
+                            />
+                          ),
                         }[header.column.getIsSorted()] ?? null}
                       </div>
                     )}
@@ -570,7 +606,10 @@ export function NewsArticles() {
           </TableBody>
         </Table>
         <div className="border-t h-15 p-2 items-center flex justify-start">
-          <span className='text-sm text-muted-foreground'>  Showing {startEntry} to {endEntry} of {totalEntries} entries </span>
+          <span className="text-sm text-muted-foreground">
+            {" "}
+            Showing {startEntry} to {endEntry} of {totalEntries} entries{" "}
+          </span>
         </div>
         <div className="h-15 p-2 items-center flex justify-center">
           <div>
@@ -578,7 +617,9 @@ export function NewsArticles() {
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
                     disabled={currentPage === 1}
                   />
                 </PaginationItem>
@@ -591,7 +632,11 @@ export function NewsArticles() {
                         }
                       }}
                       isActive={currentPage === page}
-                      className={currentPage === page ? "bg-sidebar text-white rounded-none h-8 w-8" : "bg-white h-8 w-8"}
+                      className={
+                        currentPage === page
+                          ? "bg-sidebar text-white rounded-none h-8 w-8"
+                          : "bg-white h-8 w-8"
+                      }
                     >
                       {page}
                     </PaginationLink>
@@ -599,7 +644,9 @@ export function NewsArticles() {
                 ))}
                 <PaginationItem>
                   <PaginationNext
-                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
                     disabled={currentPage === totalPages}
                   />
                 </PaginationItem>
@@ -608,18 +655,16 @@ export function NewsArticles() {
           </div>
         </div>
 
-        {
-          isModalOpen &&
+        {isModalOpen && (
           <ArticlesModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             data={selectedArticle}
             darkMode={darkMode}
           />
-        }
+        )}
 
-        {
-          alertOpen &&
+        {alertOpen && (
           <Alert
             open={alertOpen}
             onOpenChange={setAlertOpen}
@@ -628,16 +673,13 @@ export function NewsArticles() {
             type="delete"
             onConfirm={deleteVideo}
           />
-
-
-        }
-
+        )}
       </div>
       <AddArticlesModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-      // data={selectedArticle}
-      // darkMode={darkMode}
+        // data={selectedArticle}
+        // darkMode={darkMode}
       />
       <EditArticlesModal
         data={selectedEditArticle}
@@ -645,12 +687,6 @@ export function NewsArticles() {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
       />
-
-
-
     </div>
   );
 }
-
-
-
