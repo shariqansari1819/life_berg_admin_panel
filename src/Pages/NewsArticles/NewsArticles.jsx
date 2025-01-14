@@ -297,7 +297,7 @@ export function NewsArticles() {
       const response = await fetch(
         `${
           import.meta.env.VITE_APP_API_URL
-        }/news-article/all?page=${currentPage}&limit=${itemsPerPage}&filter=${order}`,
+        }/news-article/all?page=${currentPage}&limit=${itemsPerPage}&filter=${order}&order=asc`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

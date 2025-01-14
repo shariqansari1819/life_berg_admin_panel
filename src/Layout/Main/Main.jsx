@@ -10,6 +10,8 @@ import { Users } from "../../Pages/Users/Users"
 import {NewsArticles } from "../../Pages/NewsArticles/NewsArticles"
 import Banner from '../../Pages/Banner/Banner'
 import Banners from '../../Pages/Banners/Banners'
+import OrderContent from '../../Pages/OrderContent/OrderContent'
+
 
 
 const Main = () => {
@@ -25,6 +27,9 @@ const Main = () => {
         <Route path="/news-articles" element={<PrivateRoute Component={NewsArticles} />} />
         {/* <Route path="/banner" element={<PrivateRoute Component={Banner} />} /> */}
         <Route path="/banner" element={<PrivateRoute Component={Banners} />} />
+
+        <Route path="/order-content" element={<PrivateRoute Component={OrderContent} />} />
+
 
 
         {/*<Route path="/reports" element={<PrivateRoute Component={Reports} />} />*/}

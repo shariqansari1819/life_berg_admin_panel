@@ -159,7 +159,7 @@ export function Users() {
     setAlertOpen(!alertOpen);
   };
 
-  const deleteVideoMutation = useMutation({
+  const deleteUserMutation = useMutation({
     mutationFn: async (userId) => {
       const token = localStorage.getItem("authToken");
       const response = await fetch(
@@ -274,7 +274,7 @@ export function Users() {
 
   const deleteVideo = () => {
     if (deleteObject) {
-      deleteVideoMutation.mutate(deleteObject._id);
+      deleteUserMutation.mutate(deleteObject._id);
     }
   };
 
