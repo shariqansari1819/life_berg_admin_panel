@@ -106,7 +106,7 @@ function OrderContent() {
                 className="w-8 h-8 rounded-full object-cover"
               />
               <span
-                className="truncate w-[150px] whitespace-nowrap overflow-hidden"
+                className="truncate w-[250px] whitespace-nowrap overflow-hidden"
                 title={row.original.title}
               >
                 {row.original.title}
@@ -347,7 +347,7 @@ function OrderContent() {
                           style: {
                             cursor: "pointer",
                             display: "flex",
-                            justifyContent: "center",
+                            justifyContent: "start",
                             alignItems: "center",
                           },
                         }}

@@ -72,8 +72,8 @@ export function NewsArticles() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [order, setOrder] = useState("desc");
   const navigate = useNavigate();
-  var totalEntries ;
-  var totalPages ;
+  var totalEntries;
+  var totalPages;
 
 
 
@@ -107,7 +107,7 @@ export function NewsArticles() {
                 className="w-8 h-8 rounded-full object-cover"
               />
               <span
-                className="truncate w-[150px] whitespace-nowrap overflow-hidden"
+                className="truncate w-[250px] whitespace-nowrap overflow-hidden"
                 title={row.original.title}
               >
                 {row.original.title}
@@ -223,7 +223,9 @@ export function NewsArticles() {
 
   const handleEditArticle = (row) => {
 
-    setSelectedEditArticle(row);
+    setSelectedEditArticle(row?.original?._id);
+    console.log("edit article", row?.original)
+    // setSelectedArticle(row?.original?._id);
     setIsEditModalOpen(true);
 
   };
@@ -298,7 +300,7 @@ export function NewsArticles() {
         author: article?.author,
       }))
       setArticleList(mappedData);
-      
+
     }
   }, [data]);
 
@@ -353,7 +355,7 @@ export function NewsArticles() {
                 >
 
                   <DropdownMenuItem
-                    onClick={() => handleEditArticle(row?.original)}
+                    onClick={() => handleEditArticle(row)}
                     inset="4"
                     className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-4 pr-8 justify-start"
                   >
@@ -514,7 +516,7 @@ export function NewsArticles() {
                           style: {
                             cursor: "pointer",
                             display: "flex",
-                            justifyContent: "center",
+                            justifyContent: "start",
                             alignItems: "center",
                           },
                         }}
@@ -634,12 +636,19 @@ export function NewsArticles() {
         onClose={() => setIsAddModalOpen(false)}
 
       />
-      <EditArticlesModal
-        data={selectedEditArticle}
-        darkMode={darkMode}
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-      />
+      {
+        isEditModalOpen && (
+          <EditArticlesModal
+            // data={selectedEditArticle}
+            articleId={selectedEditArticle}
+            darkMode={darkMode}
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+          />
+
+        )
+      }
+
     </div>
   );
 }

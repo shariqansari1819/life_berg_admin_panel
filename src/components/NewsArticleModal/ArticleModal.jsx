@@ -58,12 +58,13 @@ const formats = [
 
 export function ArticlesModal({ isOpen, onClose, articleId }) {
 
-    // console.log("articleId", articleId)
+    const [loading, setLoading] = useState(false);
     const [editorValue, setEditorValue] = useState('');
     const queryClient = useQueryClient();
     const { data, error, isLoading } = useQuery({
         queryKey: ["article details"],
         queryFn: async () => {
+          setLoading(true)
           const token = localStorage.getItem("authToken");
           const response = await fetch(
             `${import.meta.env.VITE_APP_API_URL}/news-article/detail/${articleId}`,
@@ -74,14 +75,20 @@ export function ArticlesModal({ isOpen, onClose, articleId }) {
             }
           );
           if (response?.status == 401) {
+          setLoading(false)
+
             localStorage.removeItem("authToken");
             navigate(0);
             navigate("/login");
           } else if (response?.status == 400) {
+          setLoading(false)
+
             localStorage.removeItem("authToken");
             navigate(0);
             navigate("/login");
           } else if (response?.status == 500) {
+          setLoading(false)
+
             localStorage.removeItem("authToken");
             navigate(0);
             navigate("/login");
@@ -97,7 +104,7 @@ export function ArticlesModal({ isOpen, onClose, articleId }) {
     //     console.log("useEffect")
     //   },[])
 
-      console.log("asdsdfsd", data?.data[0])
+      // console.log("asdsdfsd", data?.data[0])
     
 
 
@@ -126,7 +133,10 @@ export function ArticlesModal({ isOpen, onClose, articleId }) {
 
     return (
         <Dialog.Root open={isOpen} onOpenChange={onClose}>
+         
             <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-30" />
+            {
+                !loading ? (
             <Dialog.Content className={cn(
                 "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md",
                 "dark:bg-gray-800 dark:text-muted w-9/12"
@@ -181,6 +191,7 @@ export function ArticlesModal({ isOpen, onClose, articleId }) {
                     </Card>
                 </Dialog.Description>
             </Dialog.Content>
+              ) : ""}
         </Dialog.Root>
     );
 }

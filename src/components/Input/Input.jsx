@@ -6,7 +6,7 @@ const Input = React.forwardRef(
     const iconLeft = iconPosition === "left";
 
     return (
-      <div className="relative flex items-center max-w-sm">
+      <div className="relative flex items-center">
         {icons && iconLeft && (
           <span className="absolute left-3 text-muted-foreground">
             {icons}
