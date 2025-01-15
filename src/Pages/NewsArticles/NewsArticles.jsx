@@ -23,31 +23,14 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Input } from "../../components/Input/Input";
 import avatar from "../../assets/avatar.jpg";
-// import {
-//   Select,
-//   SelectGroup,
-//   SelectValue,
-//   SelectTrigger,
-//   SelectContent,
-//   SelectLabel,
-//   SelectItem,
-//   SelectSeparator,
-// } from '../../Components/Select/Select';
-// import * as SelectPrimitive from "@radix-ui/react-select";
-// import { Check, ChevronDown, ChevronUp, EyeIcon, FilePenIcon } from "lucide-react";
+
 import { useSelector } from "react-redux";
-import { Select } from "../../components/Select/Select";
-import { SelectTrigger } from "../../components/Select/SelectTrigger";
-import { SelectContent } from "../../components/Select/SelectContent";
-import { SelectItem } from "../../components/Select/SelectItem";
-// import { SelectSeparator } from '../../Components/Select/SelectSeparator';
-// import { SelectLabel } from '../../Components/Select/SelectLabel';
-import { SelectValue } from "../../components/Select/SelectValue";
+
 import Alert from "../../components/Alert/Alert";
-import { TrashIcon } from "../../components/Icons/Icons";
+
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -70,9 +53,13 @@ const DropdownMenuSeparator = DropdownMenuPrimitive.Separator;
 const DropdownMenuLabel = DropdownMenuPrimitive.Label;
 
 export function NewsArticles() {
+  const [articleList, setArticleList] = useState([]);
+
   const queryClient = useQueryClient();
   const { darkMode } = useSelector((state) => state.darkMode);
   const [globalFilter, setGlobalFilter] = useState("");
+
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(50); // State for items per page
   const [deleteObject, setDeleteObject] = useState(null);
@@ -85,6 +72,11 @@ export function NewsArticles() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [order, setOrder] = useState("desc");
   const navigate = useNavigate();
+  var totalEntries ;
+  var totalPages ;
+
+
+
 
   function isValidUrl(string) {
     try {
@@ -104,9 +96,8 @@ export function NewsArticles() {
         cell: ({ row }) => {
           const profilePicture = row.original.profilePicture;
           const profilePictureUrl = profilePicture
-            ? `${
-                import.meta.env.VITE_APP_BASE_URL
-              }/uploads/images/${profilePicture}`
+            ? `${import.meta.env.VITE_APP_BASE_URL
+            }/uploads/images/${profilePicture}`
             : avatar;
           return (
             <div className="flex items-center gap-2">
@@ -125,16 +116,7 @@ export function NewsArticles() {
           );
         },
       },
-      // {
-      //   id: 'title',
-      //   header: 'Title',
-      //   accessorKey: 'title',
-      // },
-      // {
-      //   id: 'title',
-      //   header: 'Title',
-      //   accessorKey: 'title',
-      // },
+
       {
         id: "type",
         header: "Category",
@@ -145,11 +127,7 @@ export function NewsArticles() {
         header: "Read Time",
         accessorKey: "readTime",
       },
-      // {
-      //   id: 'subCategory',
-      //   header: 'Sub Category',
-      //   accessorKey: 'subCategory'
-      // },
+
       {
         id: "publishedTime",
         header: "Uploaded At",
@@ -158,18 +136,14 @@ export function NewsArticles() {
           return moment(row.original.publishedTime).format("MMM D, YYYY");
         },
       },
-      // {
-      //   id:'profileStatus',
-      //   header:"Profile Status",
-      //   accessorKey:"profileStatus"
-      // }
+
     ],
     []
   );
 
   const handleView = (row) => {
     // console.log("row for view", row.original)
-    setSelectedArticle(row?.original);
+    setSelectedArticle(row?.original?._id);
     setIsModalOpen(true);
   };
 
@@ -246,33 +220,18 @@ export function NewsArticles() {
     },
   });
 
-  // const handleSuspend = (row) => {
-  //   const updateUserData = {
-  //     userId: row?.original?._id,
-  //     "status": "suspended"
-  //   }
-  //   updateUserMutation.mutate(updateUserData);
-
-  // }
 
   const handleEditArticle = (row) => {
-    // console.log("data-------<<-->>", row)
+
     setSelectedEditArticle(row);
     setIsEditModalOpen(true);
-    // updateUserMutation.mutate(updateUserData);
+
   };
 
-  // const addNewArticle = (row, data) => {
-  //   const updateUserData = {
-  //     userId: row?._id,
-  //     "profileStatus": data
-  //   }
-  //   updateUserMutation.mutate(updateUserData);
-  // }
+
 
   const handleAdd = () => {
-    // console.log("row for view", row.original)
-    // setSelectedArticle(row?.original)
+
     setIsAddModalOpen(true);
   };
 
@@ -295,9 +254,8 @@ export function NewsArticles() {
     queryFn: async () => {
       const token = localStorage.getItem("authToken");
       const response = await fetch(
-        `${
-          import.meta.env.VITE_APP_API_URL
-        }/news-article/all?page=${currentPage}&limit=${itemsPerPage}&filter=${order}&order=asc`,
+        `${import.meta.env.VITE_APP_API_URL
+        }/news-article/all?page=${currentPage}&limit=${itemsPerPage}&filter=${order}&order=${1}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -323,10 +281,10 @@ export function NewsArticles() {
     keepPreviousData: true,
   });
 
-  const tableData = useMemo(() => {
-    console.log("data.success", data?.message?.newsArticles?.docs);
-    if (data && data.success) {
-      return data?.message?.newsArticles?.docs.map((article) => ({
+
+  useEffect(() => {
+    if (data?.message?.newsArticles) {
+      const mappedData = data?.message?.newsArticles?.docs.map((article) => ({
         _id: article._id,
         title: article?.title,
         description: article?.description,
@@ -338,46 +296,28 @@ export function NewsArticles() {
         subCategory: article?.subCategory?.name,
         category: article?.subCategory?._id,
         author: article?.author,
-        // videos: user?.videos,
-        // likes: user?.likes,
-        // profileStatus: user?.profileStatus
-        // profileStatus: article?.profileStatus,
-        // subscriptionStatus: article?.subscriptionStatus,
-      }));
+      }))
+      setArticleList(mappedData);
+      
     }
-    return [];
   }, [data]);
 
-  const totalEntries = data?.message?.newsArticles?.totalDocs || 0;
-  const totalPages = data?.message?.newsArticles?.totalPages || 0;
+  totalEntries = data?.message?.newsArticles?.totalDocs || 0;
+  totalPages = data?.message?.newsArticles?.totalPages || 0;
+
+
+
 
   // Calculate the entries currently being shown
   const startEntry = (currentPage - 1) * itemsPerPage + 1;
   const endEntry = Math.min(currentPage * itemsPerPage, totalEntries);
 
-  const table = useReactTable({
-    data: tableData,
+  var table = useReactTable({
+    data: articleList,
     columns: useMemo(
       () => [
         ...columns,
-        // {
-        //   id: 'actions',
-        //   header: 'Actions',
-        //   cell: ({ row }) => (
 
-        //     <div className="flex items-center gap-2">
-        //       {
-        //         row?.original?.profileStatus === 'suspended' ? <Button onClick={() => handleEdit(row)} variant="ghost" className="bg-green-900 opacity:0.2 text-white hover:bg-green-400 hover:text-white" >
-        //           <span>active</span>
-        //         </Button> : <Button onClick={() => handleSuspend(row)} variant="ghost" className="bg-red-900 opacity:0.2 text-white hover:bg-red-400 hover:text-white" >
-
-        //           <span > suspend</span>
-        //         </Button>
-        //       }
-
-        //     </div>
-        //   ),
-        // },
         {
           id: "moredetails",
           header: "More Details",
@@ -411,30 +351,15 @@ export function NewsArticles() {
                   align="end"
                   className="z-50 min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-md transition-colors duration-300 bg-white  text-gray-800"
                 >
-                  {/* <DropdownMenuItem inset="4" className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
-                  <NavLink to="/profile">
-                    <span>Actions</span>
-                  </NavLink>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" /> */}
+
                   <DropdownMenuItem
                     onClick={() => handleEditArticle(row?.original)}
                     inset="4"
                     className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-4 pr-8 justify-start"
                   >
                     <span>Edit this content</span>
-                    {/* : <span onClick={() => handleProfileUpdate(row?.original, "suspended")}> Suspend </span> */}
                   </DropdownMenuItem>
-                  {/*<DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
-                 <DropdownMenuItem inset="4" className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
-                  <span
-                    onClick={() => handleAdd(row?.original)}
-                  >Add Article</span>
 
-
-
-
-                </DropdownMenuItem> */}
                   <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
 
                   <DropdownMenuItem
@@ -442,18 +367,9 @@ export function NewsArticles() {
                     className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-4 pr-8 justify-start"
                   >
                     <span>Delete this content</span>
-                    {/* : <span onClick={() => handleSubUpdate(row?.original, "inactive")}> Inactivate Payment </span> */}
+
                   </DropdownMenuItem>
-                  {/* <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" />
 
-                <DropdownMenuItem className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 pl-8">
-
-                  <span
-                  // onClick={() => handleView(row?.original)}
-                  >Archive this content</span>
-
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-200 -mx-1 my-1 h-px" /> */}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -497,10 +413,61 @@ export function NewsArticles() {
 
   const paginationRange = getPaginationRange();
 
+
+
+  // const mutation = useMutation({
+  //   mutationFn: async (updatedOrder) => {
+  //     const token = localStorage.getItem('authToken');
+  //     const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/order-article`, {
+  //       method: 'PUT',
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(updatedOrder),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error('Failed to update order');
+  //     }
+
+  //     return response.json();
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ['all-articles'] });
+  //   },
+  //   onError: (error) => {
+  //     console.error('Error updating order:', error);
+  //   },
+  // });
+
+
+  const updateOrder = async (updatedOrder) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/order-article`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedOrder),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update order');
+    }
+
+    return response.json();
+  }
+
+
+
+
+
   return (
     <div>
       <div className="flex justify-end items-center m-2  gap-2">
-        <div className=" w-full">
+        {/* <div className=" w-full">
           <select
             id="type"
             name="type"
@@ -512,8 +479,8 @@ export function NewsArticles() {
             <option value="asc" label="Old to New " />
             <option value="desc" label="New to Old" />
           </select>
-          {/* {formik.errors.type && <div className="text-red-500 text-sm">{formik.errors.type}</div>} */}
-        </div>
+           {formik.errors.type && <div className="text-red-500 text-sm">{formik.errors.type}</div>} 
+        </div> */}
 
         <div className={`w-full max-w-sm ${darkMode ? "dark" : ""}`}>
           <Input
@@ -530,22 +497,7 @@ export function NewsArticles() {
           {" "}
           Add New Content{" "}
         </Button>
-        {/*<div className={`w-full max-w-sm ${darkMode ? 'dark' : ""}`}>
-          <Select onValueChange={setItemsPerPage} className="w-full">
-            <SelectTrigger className="placeholder" placeholder="Select an option">
-              <SelectValue value={itemsPerPage} />
-            </SelectTrigger>
-            <div>
-              <SelectContent className={`${darkMode ? 'dark' : ""}`}>
-                <SelectItem value={10}>10</SelectItem>
-                <SelectItem value={15}>15</SelectItem>
-                <SelectItem value={20}>20</SelectItem>
-                <SelectItem value={25}>25</SelectItem>
-              </SelectContent>
 
-            </div>
-          </Select>
-        </div>*/}
       </div>
       <div className="border rounded-xs m-2">
         <Table>
@@ -556,6 +508,7 @@ export function NewsArticles() {
                   <TableHead key={header.id}>
                     {header.isPlaceholder ? null : (
                       <div
+
                         {...{
                           onClick: header.column.getToggleSortingHandler(),
                           style: {
@@ -594,8 +547,9 @@ export function NewsArticles() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {table?.getRowModel()?.rows?.map((row) => (
-              <TableRow key={row.id}>
+            {table?.getRowModel()?.rows?.map((row, index) => (
+              <TableRow key={row.id}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -659,7 +613,7 @@ export function NewsArticles() {
           <ArticlesModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-            data={selectedArticle}
+            articleId={selectedArticle}
             darkMode={darkMode}
           />
         )}
@@ -678,8 +632,7 @@ export function NewsArticles() {
       <AddArticlesModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        // data={selectedArticle}
-        // darkMode={darkMode}
+
       />
       <EditArticlesModal
         data={selectedEditArticle}
