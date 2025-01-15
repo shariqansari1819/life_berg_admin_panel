@@ -136,7 +136,7 @@ export function ArticlesModal({ isOpen, onClose, articleId }) {
          
             <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-30" />
             {
-                !loading ? (
+                loading ? (
             <Dialog.Content className={cn(
                 "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md",
                 "dark:bg-gray-800 dark:text-muted w-9/12"
@@ -165,9 +165,9 @@ export function ArticlesModal({ isOpen, onClose, articleId }) {
                                             alt="Uploaded content"
                                             className="w-full h-full object-cover rounded-lg"
                                         />
-                                        <div className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-lg cursor-pointer">
+                                        {/* <div className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-lg cursor-pointer">
                                             <Upload className="w-4 h-4 text-[#75767F]" />
-                                        </div>
+                                        </div> */}
                                     </div>
                                     <div className='flex items-center justify-between w-full py-2'>
                                         <div className=' flex items-center text-[#75767F] text-[16px]'> Posted By: </div>
