@@ -91,7 +91,7 @@ export function NewsArticles() {
     () => [
       {
         id: "title",
-        header: "POSTNAME",
+        header: "Post Name",
         accessorKey: "title",
         cell: ({ row }) => {
           const profilePicture = row.original.profilePicture;
