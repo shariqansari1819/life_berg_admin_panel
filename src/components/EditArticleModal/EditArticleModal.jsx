@@ -122,7 +122,7 @@ export function EditArticlesModal({ isOpen, onClose, articleId }) {
     });
 
 
-    // console.log("data", isLoading)
+    console.log("data", data?.data[0]?.media?.url)
 
     const mutation = useMutation({
         mutationFn: async (newArticle) => {
@@ -136,7 +136,7 @@ export function EditArticlesModal({ isOpen, onClose, articleId }) {
                 body: newArticle,
             });
 
-            console.log("response", response)
+            console.log("response-----", response)
 
             if (!response.ok) {
                 throw new Error('Failed to update article');
@@ -183,7 +183,7 @@ export function EditArticlesModal({ isOpen, onClose, articleId }) {
             formData.append('publishedTime', formattedDate);
             formData.append('type', values.type); // New field
             formData.append('author', values.author); // New field
-
+            console.log("asfsa", values.image)
             // formData.append('subCategory', values.subCategory); // New field
             // console.log("adfasdfasdf", propsData?._id)
             mutation.mutate(formData);
@@ -211,6 +211,9 @@ export function EditArticlesModal({ isOpen, onClose, articleId }) {
         }
     }
 
+
+    console.log()
+
     const { darkMode } = useSelector((state) => state.darkMode);
     const profilePictureUrl = data?.data[0]?.profilePicture
         ? isValidUrl(data?.data[0]?.profilePicture)
@@ -237,8 +240,7 @@ export function EditArticlesModal({ isOpen, onClose, articleId }) {
 
         <Dialog.Root open={isOpen} onOpenChange={onClose}>
             <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-30" />
-            {
-                !loading ? (
+           
             <Dialog.Content className={cn(
                 "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md",
                 "dark:bg-gray-800 dark:text-muted w-9/12"
@@ -269,7 +271,11 @@ export function EditArticlesModal({ isOpen, onClose, articleId }) {
                                                     onChange={handleImageChange}
                                                 />
                                                 <img
-                                                    src={image ? image : profilePictureUrl}
+                                                    src={  
+                                                        image ? image : 
+                                                           `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${data?.data[0]?.media?.url}` 
+                                                          
+                                                      }
                                                     alt="Uploaded content"
                                                     className="w-full h-full object-cover rounded-lg"
                                                 />
@@ -397,7 +403,7 @@ export function EditArticlesModal({ isOpen, onClose, articleId }) {
                 
 
             </Dialog.Content>
-                ) : ""}
+               
         </Dialog.Root>
     );
 }
