@@ -61,8 +61,8 @@ export function ArticlesModal({ isOpen, onClose, articleId }) {
   const [loading, setLoading] = useState(false);
   const [editorValue, setEditorValue] = useState('');
   const queryClient = useQueryClient();
-  const { data, error, isLoading } = useQuery({
-    queryKey: ["article details"],
+  const { data, error, isLoading:fLoading } = useQuery({
+    queryKey: ["article details", articleId],
     queryFn: async () => {
       setLoading(true)
       const token = localStorage.getItem("authToken");
@@ -96,15 +96,12 @@ export function ArticlesModal({ isOpen, onClose, articleId }) {
         return response.json();
       }
     },
-    keepPreviousData: true,
+    staleTime: 0, // Data becomes stale immediately
+    cacheTime: 0, // Disable caching
   });
 
 
-  //   useEffect(()=>{
-  //     console.log("useEffect")
-  //   },[])
 
-  // console.log("asdsdfsd", data?.data[0])
 
 
 
@@ -125,39 +122,36 @@ export function ArticlesModal({ isOpen, onClose, articleId }) {
     }
   }
   const { darkMode } = useSelector((state) => state.darkMode);
-  // const profilePictureUrl = data?.profilePicture
-  //     ? isValidUrl(data?.profilePicture)
-  //         ? data?.profilePicture
-  //         : `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${data?.profilePicture}`
-  //     : avatar;
+
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
 
       <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-30" />
-      {
-        loading ? (
-          <Dialog.Content className={cn(
-            "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md",
-            "dark:bg-gray-800 dark:text-muted w-9/12"
-          )}>
 
-            <Dialog.Description className="">
-              <Card className="bg-[#f9f9f9] shadow-md rounded-[4px] ">
-                <div className="flex">
-                  <div className="w-[200px] bg-white py-5 px-4 space-y-[6px] text-[13px] border-r border-gray-200">
-                    <h2 className="font-semibold text-[15px] mb-4">Content Details</h2>
-                    <div className="text-[#2d87f3] font-medium">Preview</div>
+      <Dialog.Content className={cn(
+        "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md",
+        "dark:bg-gray-800 dark:text-muted w-9/12"
+      )}>
 
-                  </div>
-                  <div className="flex-1 p-5 relative">
-                    <button className="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-                      <Dialog.Close asChild>
-                        <button className={cn("rounded-full transition-colors p-1 duration-300 rounded-full bg-gray-100 dark:bg-gray-800 text-foreground", "dark:text-gray-100 dark:bg-gray-900 dark:hover:text-gray-100 dark:hover:bg-gray-400")}>
-                          <X className="h-5 w-5" />
-                        </button>
-                      </Dialog.Close>
+        <Dialog.Description className="">
+          <Card className="bg-[#f9f9f9] shadow-md rounded-[4px] ">
+            <div className="flex">
+              <div className="w-[200px] bg-white py-5 px-4 space-y-[6px] text-[13px] border-r border-gray-200">
+                <h2 className="font-semibold text-[15px] mb-4">Content Details</h2>
+                <div className="text-[#2d87f3] font-medium">Preview</div>
+
+              </div>
+              <div className="flex-1 p-5 relative">
+                <button className="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+                  <Dialog.Close asChild>
+                    <button className={cn("rounded-full transition-colors p-1 duration-300 rounded-full bg-gray-100 dark:bg-gray-800 text-foreground", "dark:text-gray-100 dark:bg-gray-900 dark:hover:text-gray-100 dark:hover:bg-gray-400")}>
+                      <X className="h-5 w-5" />
                     </button>
+                  </Dialog.Close>
+                </button>
+                {
+                  !fLoading ? (
                     <div className="flex flex-col w-full items-start h-[500px] overflow-scroll overflow-x-hidden">
                       <div className="relative w-24 h-24">
                         <img
@@ -190,12 +184,13 @@ export function ArticlesModal({ isOpen, onClose, articleId }) {
 
                       <div className='ql-editor' dangerouslySetInnerHTML={{ __html: data?.data[0]?.description }} />
                     </div>
-                  </div>
-                </div>
-              </Card>
-            </Dialog.Description>
-          </Dialog.Content>
-        ) : ""}
+                  ) : "loading..."}
+              </div>
+            </div>
+          </Card>
+        </Dialog.Description>
+      </Dialog.Content>
+
     </Dialog.Root>
   );
 }

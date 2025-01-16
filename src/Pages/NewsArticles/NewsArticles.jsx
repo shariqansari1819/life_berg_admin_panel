@@ -107,7 +107,7 @@ export function NewsArticles() {
                 className="w-8 h-8 rounded-full object-cover"
               />
               <span
-                className="truncate w-[250px] whitespace-nowrap overflow-hidden"
+                className="w-[250px] break-words overflow-hidden"
                 title={row.original.title}
               >
                 {row.original.title}
@@ -326,7 +326,7 @@ export function NewsArticles() {
           cell: ({ row }) => (
             <div className="flex items-center">
               <span
-                className="cursor-pointer border-blue-600 border-2 text-blue-600 px-4 py-1 rounded-full"
+                className="cursor-pointer border-blue-600 px-4 border-2 text-blue-600 py-1 rounded-full"
                 onClick={() => handleView(row)}
               >
                 view more details
@@ -507,10 +507,10 @@ export function NewsArticles() {
             <TableRow>
               {table?.getHeaderGroups()?.map((headerGroup) =>
                 headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="pl-1" >
                     {header.isPlaceholder ? null : (
                       <div
-
+                      
                         {...{
                           onClick: header.column.getToggleSortingHandler(),
                           style: {
@@ -518,6 +518,7 @@ export function NewsArticles() {
                             display: "flex",
                             justifyContent: "start",
                             alignItems: "center",
+                            
                           },
                         }}
                       >
@@ -553,7 +554,7 @@ export function NewsArticles() {
               <TableRow key={row.id}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

@@ -503,7 +503,7 @@ export function Users() {
             <TableRow>
               {table?.getHeaderGroups()?.map((headerGroup) =>
                 headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="pl-1">
                     {header.isPlaceholder ? null : (
                       <div
                         {...{

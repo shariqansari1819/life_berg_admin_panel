@@ -42,55 +42,22 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { UserDetailsModal } from "../../components/user-detail-modal/UserDetails";
 import moment from "moment";
 import { ArticlesModal } from "../../components/NewsArticleModal/ArticleModal";
-import { AddArticlesModal } from "../../components/AddArticleModal/AddArticleModal";
-import { EditArticlesModal } from "../../components/EditArticleModal/EditArticleModal";
-
-const DropdownMenu = DropdownMenuPrimitive.Root;
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
-const DropdownMenuContent = DropdownMenuPrimitive.Content;
-const DropdownMenuItem = DropdownMenuPrimitive.Item;
-const DropdownMenuSeparator = DropdownMenuPrimitive.Separator;
-const DropdownMenuLabel = DropdownMenuPrimitive.Label;
 
 function OrderContent() {
   const [articleList, setArticleList] = useState([]);
-
   const queryClient = useQueryClient();
   const { darkMode } = useSelector((state) => state.darkMode);
   const [globalFilter, setGlobalFilter] = useState("");
   const [draggingIndex, setDraggingIndex] = useState(null);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(50); // State for items per page
-  const [deleteObject, setDeleteObject] = useState(null);
   const [selectedArticle, setSelectedArticle] = useState(null);
-//   const [selectedEditArticle, setSelectedEditArticle] = useState(null);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-//   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-//   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [order, setOrder] = useState("desc");
   const navigate = useNavigate();
-  var totalEntries ;
-  var totalPages ;
-
-
-
-
-  function isValidUrl(string) {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
 
   const columns = useMemo(
     () => [
       {
         id: "title",
-        header: "POSTNAME",
+        header: "Title",
         accessorKey: "title",
         cell: ({ row }) => {
           const profilePicture = row.original.profilePicture;
@@ -106,7 +73,7 @@ function OrderContent() {
                 className="w-8 h-8 rounded-full object-cover"
               />
               <span
-                className="truncate w-[250px] whitespace-nowrap overflow-hidden"
+                className="w-[250px] break-words overflow-hidden"
                 title={row.original.title}
               >
                 {row.original.title}
@@ -146,22 +113,6 @@ function OrderContent() {
     setIsModalOpen(true);
   };
 
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
   const { data, error, isLoading } = useQuery({
     queryKey: ["articles"],
     queryFn: async () => {
@@ -194,11 +145,12 @@ function OrderContent() {
     keepPreviousData: true,
   });
 
-//   console.log("data", data?.message?.newsArticles)
+  //   console.log("data", data?.message?.newsArticles)
 
 
   useEffect(() => {
     if (data?.message?.newsArticles) {
+      // console.log("123243",data?.message?.newsArticles)
       const mappedData = data?.message?.newsArticles?.map((article) => ({
         _id: article._id,
         title: article?.title,
@@ -213,7 +165,7 @@ function OrderContent() {
         author: article?.author,
       }))
       setArticleList(mappedData);
-      
+
     }
   }, [data]);
 
@@ -237,7 +189,7 @@ function OrderContent() {
             </div>
           ),
         },
-       
+
       ],
       [columns]
     ),
@@ -254,7 +206,7 @@ function OrderContent() {
   if (isLoading) return <div className="text-center">Loading...</div>;
   if (error) return <div>Error loading users: {error.message}</div>;
 
-  
+
 
 
   const handleDragStart = (index) => {
@@ -303,20 +255,6 @@ function OrderContent() {
   return (
     <div>
       <div className="flex justify-end items-center m-2  gap-2">
-        {/* <div className=" w-full">
-          <select
-            id="type"
-            name="type"
-            value={order}
-            onChange={(e) => setOrder(e.target.value)}
-            className="text-muted-foreground w-full py-2 border-x border-y focus:outline-none"
-          >
-            <option value="" label="Search By Order..." />
-            <option value="asc" label="Old to New " />
-            <option value="desc" label="New to Old" />
-          </select>
-          {formik.errors.type && <div className="text-red-500 text-sm">{formik.errors.type}</div>}
-        </div> */}
 
         <div className={`w-full max-w-sm ${darkMode ? "dark" : ""}`}>
           <Input
@@ -329,7 +267,7 @@ function OrderContent() {
             className="w-full max-w-sm"
           />
         </div>
-       
+
 
       </div>
       <div className="border rounded-xs m-2">
@@ -338,7 +276,7 @@ function OrderContent() {
             <TableRow>
               {table?.getHeaderGroups()?.map((headerGroup) =>
                 headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="pl-1">
                     {header.isPlaceholder ? null : (
                       <div
 
@@ -405,7 +343,7 @@ function OrderContent() {
             darkMode={darkMode}
           />
         )}
-      </div>     
+      </div>
     </div>
   );
 }

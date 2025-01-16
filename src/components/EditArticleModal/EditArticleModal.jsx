@@ -85,7 +85,7 @@ export function EditArticlesModal({ isOpen, onClose, articleId }) {
 
     const { data, error, isLoading } = useQuery({
         
-        queryKey: ["article details"],
+        queryKey: ["single article detail", articleId],
         queryFn: async () => {
             setLoading(true)
             const token = localStorage.getItem("authToken");
@@ -118,7 +118,8 @@ export function EditArticlesModal({ isOpen, onClose, articleId }) {
                 return response.json();
             }
         },
-        keepPreviousData: true,
+        staleTime: 0, // Data becomes stale immediately
+        cacheTime: 0, // Disable caching
     });
 
 
@@ -261,140 +262,143 @@ export function EditArticlesModal({ isOpen, onClose, articleId }) {
                                                 </button>
                                             </Dialog.Close>
                                         </button>
-                                        <div className="flex flex-col items-start h-[500px] overflow-scroll overflow-x-hidden">
-                                            <div className="relative w-24 h-24">
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    ref={fileInputRef}
-                                                    style={{ display: "none" }}
-                                                    onChange={handleImageChange}
-                                                />
-                                                <img
-                                                    src={  
-                                                        image ? image : 
-                                                           `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${data?.data[0]?.media?.url}` 
-                                                          
-                                                      }
-                                                    alt="Uploaded content"
-                                                    className="w-full h-full object-cover rounded-lg"
-                                                />
-                                                <div className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-lg cursor-pointer">
-                                                    <Upload className="w-4 h-4 text-[#75767F]" onClick={handleUploadClick} />
+                                        {
+                                            !isLoading ? (<div className="flex flex-col items-start h-[500px] overflow-scroll overflow-x-hidden">
+                                                <div className="relative w-24 h-24">
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        ref={fileInputRef}
+                                                        style={{ display: "none" }}
+                                                        onChange={handleImageChange}
+                                                    />
+                                                    <img
+                                                        src={  
+                                                            image ? image : 
+                                                               `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${data?.data[0]?.media?.url}` 
+                                                              
+                                                          }
+                                                        alt="Uploaded content"
+                                                        className="w-full h-full object-cover rounded-lg"
+                                                    />
+                                                    <div className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-lg cursor-pointer">
+                                                        <Upload className="w-4 h-4 text-[#75767F]" onClick={handleUploadClick} />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            {formik.errors.image && <div className="text-red-500 text-sm">{formik.errors.image}</div>}
-                                            <div className='flex items-center justify-between w-full'>
-                                                <div className=' flex items-center text-[#75767F] text-[16px]'>
-                                                    <span>Posted By:</span>
+                                                {formik.errors.image && <div className="text-red-500 text-sm">{formik.errors.image}</div>}
+                                                <div className='flex items-center justify-between w-full'>
+                                                    <div className=' flex items-center text-[#75767F] text-[16px]'>
+                                                        <span>Posted By:</span>
+                                                    </div>
+                                                    <div className='flex items-center'>
+                                                        <Input
+                                                            type="text"
+                                                            name="author"
+                                                            onChange={formik.handleChange}
+                                                            value={formik.values.author}
+    
+                                                        />
+                                                    </div>
                                                 </div>
-                                                <div className='flex items-center'>
+                                                {formik.errors.author && <div className="text-red-500 text-sm">{formik.errors.author}</div>}
+                                                <div className='font-medium w-full text-[#75767F] text-[20px]'>
                                                     <Input
                                                         type="text"
-                                                        name="author"
+                                                        name="title"
+                                                        className="border-none w-full"
+                                                        placeholder="Add a title here..."
                                                         onChange={formik.handleChange}
-                                                        value={formik.values.author}
-
+                                                        value={formik.values.title}
                                                     />
+                                                    {formik.errors.title && <div className="text-red-500 text-sm">{formik.errors.title}</div>}
                                                 </div>
-                                            </div>
-                                            {formik.errors.author && <div className="text-red-500 text-sm">{formik.errors.author}</div>}
-                                            <div className='font-medium w-full text-[#75767F] text-[20px]'>
-                                                <Input
-                                                    type="text"
-                                                    name="title"
-                                                    className="border-none w-full"
-                                                    placeholder="Add a title here..."
-                                                    onChange={formik.handleChange}
-                                                    value={formik.values.title}
-                                                />
-                                                {formik.errors.title && <div className="text-red-500 text-sm">{formik.errors.title}</div>}
-                                            </div>
-                                            <div className='flex items-center justify-between w-full'>
-                                                <div className=' flex items-center text-[#75767F] text-[16px]'>
-                                                    <Book className='text-[16px]' /> &nbsp; <span>Estimated read time:</span>
-                                                </div>
-                                                <div className='flex items-center'>
-                                                    <Input
-                                                        type="number"
-                                                        name="readTime"
-                                                        min="1"
-                                                        max="30"
-                                                        onChange={formik.handleChange}
-                                                        value={formik.values.readTime}
-                                                        className="h-8 w-50"
-                                                    />
-                                                    &nbsp; <span> min </span>
-                                                </div>
-                                            </div>
-                                            {formik.errors.readTime && <div className="text-red-500 text-sm">{formik.errors.readTime}</div>}
-                                            <div className="w-full h-[2px] bg-blue-100 my-2 "></div>
-                                            <div className='flex items-center justify-between w-full'>
-                                                <div className=' flex items-center text-[#75767F] text-[16px]'><span>Details:</span></div>
-                                            </div>
-                                            <div className="text-editor w-full">
-                                                <ReactQuill
-                                                    value={formik.values.content}
-                                                    onChange={value => formik.setFieldValue('content', value)}
-                                                    modules={modules}
-                                                    formats={formats}
-
-                                                    placeholder="Write something awesome..."
-                                                />
-                                                {formik.errors.content && <div className="text-red-500 text-sm">{formik.errors.content}</div>}
-                                            </div>
-
-
-                                            <div className="mt-4 w-full">
-                                                <label htmlFor="type" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                    Type
-                                                </label>
-                                                <select
-                                                    id="type"
-                                                    name="type"
-                                                    onChange={formik.handleChange}
-                                                    value={formik.values.type}
-                                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                                                >
-                                                    <option value="" label="Select type" />
-                                                    <option value="general" label="General" />
-                                                    <option value="medical" label="Medical" />
-                                                </select>
-                                                {formik.errors.type && <div className="text-red-500 text-sm">{formik.errors.type}</div>}
-                                            </div>
-
-
-                                            <Button type="submit" className="mt-4 flex items-center justify-center" disabled={loading}>
-                                                {loading ? (
-                                                    <div className="flex items-center">
-                                                        <svg
-                                                            className="animate-spin h-5 w-5 mr-2 text-white"
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <circle
-                                                                className="opacity-25"
-                                                                cx="12"
-                                                                cy="12"
-                                                                r="10"
-                                                                stroke="currentColor"
-                                                                strokeWidth="4"
-                                                            ></circle>
-                                                            <path
-                                                                className="opacity-75"
-                                                                fill="currentColor"
-                                                                d="M4 12a8 8 0 018-8v8H4z"
-                                                            ></path>
-                                                        </svg>
-                                                        Submitting...
+                                                <div className='flex items-center justify-between w-full'>
+                                                    <div className=' flex items-center text-[#75767F] text-[16px]'>
+                                                        <Book className='text-[16px]' /> &nbsp; <span>Estimated read time:</span>
                                                     </div>
-                                                ) : (
-                                                    'Submit'
-                                                )}
-                                            </Button>
-                                            {mutation.isError && <div className="text-red-500 text-sm">Error: {mutation.error?.message}</div>}
-                                        </div>
+                                                    <div className='flex items-center'>
+                                                        <Input
+                                                            type="number"
+                                                            name="readTime"
+                                                            min="1"
+                                                            max="30"
+                                                            onChange={formik.handleChange}
+                                                            value={formik.values.readTime}
+                                                            className="h-8 w-50"
+                                                        />
+                                                        &nbsp; <span> min </span>
+                                                    </div>
+                                                </div>
+                                                {formik.errors.readTime && <div className="text-red-500 text-sm">{formik.errors.readTime}</div>}
+                                                <div className="w-full h-[2px] bg-blue-100 my-2 "></div>
+                                                <div className='flex items-center justify-between w-full'>
+                                                    <div className=' flex items-center text-[#75767F] text-[16px]'><span>Details:</span></div>
+                                                </div>
+                                                <div className="text-editor w-full">
+                                                    <ReactQuill
+                                                        value={formik.values.content}
+                                                        onChange={value => formik.setFieldValue('content', value)}
+                                                        modules={modules}
+                                                        formats={formats}
+    
+                                                        placeholder="Write something awesome..."
+                                                    />
+                                                    {formik.errors.content && <div className="text-red-500 text-sm">{formik.errors.content}</div>}
+                                                </div>
+    
+    
+                                                <div className="mt-4 w-full">
+                                                    <label htmlFor="type" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Type
+                                                    </label>
+                                                    <select
+                                                        id="type"
+                                                        name="type"
+                                                        onChange={formik.handleChange}
+                                                        value={formik.values.type}
+                                                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                                                    >
+                                                        <option value="" label="Select type" />
+                                                        <option value="general" label="General" />
+                                                        <option value="medical" label="Medical" />
+                                                    </select>
+                                                    {formik.errors.type && <div className="text-red-500 text-sm">{formik.errors.type}</div>}
+                                                </div>
+    
+    
+                                                <Button type="submit" className="mt-4 flex items-center justify-center" disabled={loading}>
+                                                    {loading ? (
+                                                        <div className="flex items-center">
+                                                            <svg
+                                                                className="animate-spin h-5 w-5 mr-2 text-white"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <circle
+                                                                    className="opacity-25"
+                                                                    cx="12"
+                                                                    cy="12"
+                                                                    r="10"
+                                                                    stroke="currentColor"
+                                                                    strokeWidth="4"
+                                                                ></circle>
+                                                                <path
+                                                                    className="opacity-75"
+                                                                    fill="currentColor"
+                                                                    d="M4 12a8 8 0 018-8v8H4z"
+                                                                ></path>
+                                                            </svg>
+                                                            Submitting...
+                                                        </div>
+                                                    ) : (
+                                                        'Submit'
+                                                    )}
+                                                </Button>
+                                                {mutation.isError && <div className="text-red-500 text-sm">Error: {mutation.error?.message}</div>}
+                                            </div>) :"loading..."
+                                        }
+                                        
                                     </div>
                                 </div>
                             </Card>
