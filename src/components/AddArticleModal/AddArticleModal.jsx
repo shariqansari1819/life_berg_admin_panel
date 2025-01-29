@@ -147,7 +147,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
     },
     onError: (error) => {
       setLoading(false);
-      console.error("Error creating article:", error);
+      // console.error("Error creating article:", error);
     },
   });
 

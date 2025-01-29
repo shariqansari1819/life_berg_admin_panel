@@ -12,7 +12,7 @@ import { cn } from '../../lib/utils';
 
 
 export function Modal({ isOpen, onClose, content, data }) {
-    console.log("Content", content)
+    // console.log("Content", content)
 
     return (
         <Dialog.Root open={isOpen} onOpenChange={onClose}>

@@ -36,7 +36,7 @@ const ViewBanner = ({ data, onClose }) => {
 
     const mutation = useMutation({
         mutationFn: async (newBanner) => {
-            console.log("newBanner", newBanner)
+            // console.log("newBanner", newBanner)
             const token = localStorage.getItem("authToken");
             const response = await fetch(
                 `${import.meta.env.VITE_APP_API_URL}/banner/update`,
@@ -54,14 +54,14 @@ const ViewBanner = ({ data, onClose }) => {
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries("bannersdsd"); // Assuming you have a query with this key
-            console.log("Banner Updated successfully:", data?.error?.details?.MESSAGE);
+            // console.log("Banner Updated successfully:", data?.error?.details?.MESSAGE);
             setError(data?.error?.details?.MESSAGE);
             if (data?.error?.STATUS !== 400) {
                 onClose();
             }
         },
         onError: (error) => {
-            console.error("Error creating article:", error);
+            // console.error("Error creating article:", error);
         },
     });
 
@@ -71,12 +71,12 @@ const ViewBanner = ({ data, onClose }) => {
         const isoStartDate = startDate instanceof Date && !isNaN(startDate) ? startDate.toISOString() : null;
         const isoEndDate = endDate instanceof Date && !isNaN(endDate) ? endDate.toISOString() : null;
 
-        console.log({
-            title: values.title,
-            description: values?.description,
-            startDate: isoStartDate,
-            endDate: isoEndDate,
-        });
+        // console.log({
+        //     title: values.title,
+        //     description: values?.description,
+        //     startDate: isoStartDate,
+        //     endDate: isoEndDate,
+        // });
 
         mutation.mutate({
             id: data?._id,

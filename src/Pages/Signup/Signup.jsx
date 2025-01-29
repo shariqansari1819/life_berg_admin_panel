@@ -23,12 +23,12 @@ export function Signup() {
         onSubmit: async (values, { setSubmitting, setErrors, resetForm }) => {
             try {
                 const response = await axios.post(`${import.meta.env.VITE_APP_API_URL}/signup`, values);
-                console.log('Registration successful:', response.data);
+                // console.log('Registration successful:', response.data);
                 resetForm()
                 toast.success(response.data.message);
                 navigate("/login")
             } catch (error) {
-                console.error('Registration error:', error.response.data.error.details);
+                // console.error('Registration error:', error.response.data.error.details);
                 toast.error(error.response.data.error.details);
                 if (error.response && error.response.data && error.response.data.errors) {
                     setErrors(error.response.data.errors);

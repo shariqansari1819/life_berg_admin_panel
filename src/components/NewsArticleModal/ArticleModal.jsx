@@ -96,8 +96,8 @@ export function ArticlesModal({ isOpen, onClose, articleId }) {
         return response.json();
       }
     },
-    staleTime: 0, // Data becomes stale immediately
-    cacheTime: 0, // Disable caching
+    staleTime: 120000,
+    cacheTime: 120000,
   });
 
 
@@ -157,7 +157,7 @@ export function ArticlesModal({ isOpen, onClose, articleId }) {
                         <img
                           src={
 
-                            `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${data?.data[0]?.media?.url}`
+                            `${data?.data[0]?.media?.url}`
 
                           }
                           alt="Uploaded content"

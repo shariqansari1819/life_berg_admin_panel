@@ -85,7 +85,7 @@ const Banners = () => {
             setAlertOpen(false);
         },
         onError: (error) => {
-            console.error('Error deleting banner:', error.message);
+            // console.error('Error deleting banner:', error.message);
         },
     });
 

@@ -154,7 +154,7 @@ export function Users() {
   };
 
   const handleDelete = (row) => {
-    console.log("row", row.original);
+    // console.log("row", row.original);
     setDeleteObject(row.original);
     setAlertOpen(!alertOpen);
   };
@@ -203,7 +203,7 @@ export function Users() {
       setAlertOpen(false);
     },
     onError: (error) => {
-      console.error("Error deleting video:", error.message);
+      // console.error("Error deleting video:", error.message);
     },
   });
 
@@ -243,7 +243,7 @@ export function Users() {
       setAlertOpen(false);
     },
     onError: (error) => {
-      console.error("Error deleting video:", error.message);
+      // console.error("Error deleting video:", error.message);
     },
   });
 
@@ -313,7 +313,7 @@ export function Users() {
 
   const tableData = useMemo(() => {
     if (data && data.success) {
-      console.log("This is data ", data);
+      // console.log("This is data ", data);
       return data?.message?.users?.docs.map((user) => ({
         _id: user._id,
         userName: user?.userName,

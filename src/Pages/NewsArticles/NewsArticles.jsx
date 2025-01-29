@@ -102,7 +102,7 @@ export function NewsArticles() {
           return (
             <div className="flex items-center gap-2">
               <img
-                src={profilePictureUrl}
+                src={row.original.profilePicture ? row.original.profilePicture : avatar }
                 alt={`${row.original.title}'s profile`}
                 className="w-8 h-8 rounded-full object-cover"
               />
@@ -156,7 +156,7 @@ export function NewsArticles() {
   };
 
   const handleDelete = (row) => {
-    console.log("row", row.original);
+    // console.log("row", row.original);
     setDeleteObject(row.original);
     setAlertOpen(!alertOpen);
   };
@@ -186,7 +186,7 @@ export function NewsArticles() {
       setAlertOpen(false);
     },
     onError: (error) => {
-      console.error("Error deleting video:", error.message);
+      // console.error("Error deleting video:", error.message);
     },
   });
 
@@ -216,7 +216,7 @@ export function NewsArticles() {
       setAlertOpen(false);
     },
     onError: (error) => {
-      console.error("Error deleting video:", error.message);
+      // console.error("Error deleting video:", error.message);
     },
   });
 
@@ -224,7 +224,7 @@ export function NewsArticles() {
   const handleEditArticle = (row) => {
 
     setSelectedEditArticle(row?.original?._id);
-    console.log("edit article", row?.original)
+    // console.log("edit article", row?.original)
     // setSelectedArticle(row?.original?._id);
     setIsEditModalOpen(true);
 
@@ -285,6 +285,7 @@ export function NewsArticles() {
 
 
   useEffect(() => {
+    // console.log("asss", data?.message?.newsArticles)
     if (data?.message?.newsArticles) {
       const mappedData = data?.message?.newsArticles?.docs.map((article) => ({
         _id: article._id,

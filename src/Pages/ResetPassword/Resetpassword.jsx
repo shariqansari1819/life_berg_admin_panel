@@ -22,13 +22,13 @@ export function ResetPassword() {
         onSubmit: async (values, { setSubmitting, setErrors, resetForm }) => {
             try {
                 const response = await axios.post(`${import.meta.env.VITE_APP_API_URL}/restore-password`, values);
-                console.log('Password reset request successful:', response.data);
+                // console.log('Password reset request successful:', response.data);
                 resetForm()
                 toast.success(response.data.message)
                 navigate("/login")
                 // Handle success (e.g., show a success message)
             } catch (error) {
-                console.error('Password reset request error:', error.response.data.error.details.MESSAGE);
+                // console.error('Password reset request error:', error.response.data.error.details.MESSAGE);
                 if(error.response.data.error.details.MESSAGE){
                     toast.error(error.response.data.error.details.MESSAGE)
                 }

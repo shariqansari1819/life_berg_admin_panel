@@ -34,7 +34,7 @@ const Login = () => {
                 }
                 // Handle success (e.g., navigate to dashboard, show a success message, etc.)
             } catch (error) {
-                console.error('Login error:', error);
+                // console.error('Login error:', error);
                 if (error?.response?.data?.error.details == 'Invalid password') {
                     toast.error(error?.response?.data?.error.details)
                 }

@@ -52,14 +52,14 @@ const Banner = ({ onClose }) => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries('bannersdsd'); // Assuming you have a query with this key
-      console.log('Banner created successfully:', data?.error?.details?.MESSAGE);
+      // console.log('Banner created successfully:', data?.error?.details?.MESSAGE);
       setError(data?.error?.details?.MESSAGE)
       if (data?.error?.STATUS !== 400) {
         onClose();
       }
     },
     onError: (error) => {
-      console.error('Error creating article:', error);
+      // console.error('Error creating article:', error);
     },
   });
 
@@ -69,11 +69,11 @@ const Banner = ({ onClose }) => {
     const isoStartDate = startDate ? startDate.toISOString() : null;
     const isoEndDate = endDate ? endDate.toISOString() : null;
 
-    console.log({
-      title: values.title,
-      startDate: isoStartDate,
-      endDate: isoEndDate
-    });
+    // console.log({
+    //   title: values.title,
+    //   startDate: isoStartDate,
+    //   endDate: isoEndDate
+    // });
 
 
     mutation.mutate({
