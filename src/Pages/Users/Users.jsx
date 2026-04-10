@@ -52,7 +52,7 @@ export function Users() {
   const { darkMode } = useSelector((state) => state.darkMode);
   const [globalFilter, setGlobalFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // State for items per page
+  const [itemsPerPage] = useState(50);
   const [deleteObject, setDeleteObject] = useState(null);
   const [alertOpen, setAlertOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -67,6 +67,22 @@ export function Users() {
     } catch (_) {
       return false;
     }
+  }
+
+  function formatSignupDate(dateValue) {
+    if (!dateValue) return 'N/A';
+
+    const parsedDate = new Date(dateValue);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return 'N/A';
+    }
+
+    return parsedDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
   }
 
 
@@ -106,6 +122,12 @@ export function Users() {
         id: 'country',
         header: 'Location',
         accessorKey: 'country',
+      },
+      {
+        id: 'createdAt',
+        header: 'Sign Up Date',
+        accessorKey: 'createdAt',
+        cell: ({ row }) => formatSignupDate(row.original.createdAt),
       },
       {
         id: 'vocation',
@@ -576,6 +598,5 @@ export function Users() {
     </div>
   );
 }
-
 
 
