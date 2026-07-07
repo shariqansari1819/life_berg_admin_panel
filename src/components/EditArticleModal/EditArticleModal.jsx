@@ -12,7 +12,6 @@ import { X, Upload, Book } from 'lucide-react';
 import { Card } from '../../components/Card/Card';
 import { cn } from '../../lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 
 const modules = {
     toolbar: [
@@ -40,19 +39,6 @@ const modules = {
 
 
 
-const validationSchema = Yup.object().shape({
-    title: Yup.string().required('Title is required'),
-    readTime: Yup.number()
-        .min(1, 'Minimum read time is 1 minute')
-        .max(5, 'Maximum read time is 5 minutes')
-        .required('Estimated read time is required'),
-    content: Yup.string().required('Content is required'),
-    image: Yup.mixed().required('Image is required'),
-    type: Yup.string().required('Type is required'),
-    // subCategory: Yup.string().required('SubCategory is required'),
-});
-
-
 // const fetchSubCategories = async () => {
 //     const token = localStorage.getItem('authToken');
 //     const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/article-subcategory/all`, {
@@ -68,10 +54,57 @@ const validationSchema = Yup.object().shape({
 //   };
 
 export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
-    console.log("edit article component", propsData)
     const [image, setImage] = useState(null);
+    const [submitError, setSubmitError] = useState('');
     const fileInputRef = useRef(null);
     const queryClient = useQueryClient();
+
+    const { data: articleDetail } = useQuery({
+        queryKey: ['article-detail-edit', propsData?._id],
+        enabled: Boolean(isOpen && propsData?._id),
+        queryFn: async () => {
+            const token = localStorage.getItem('authToken');
+            const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/detail/${propsData?._id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load article details');
+            }
+
+            return response.json();
+        },
+    });
+
+    const resolvedArticleData =
+        articleDetail?.message?.newsArticle ||
+        articleDetail?.message?.article ||
+        articleDetail?.message ||
+        articleDetail?.data ||
+        propsData;
+
+    const articleData = {
+        ...resolvedArticleData,
+        profilePicture: resolvedArticleData?.profilePicture || resolvedArticleData?.media?.url || '',
+    };
+
+    const validationSchema = Yup.object().shape({
+        title: Yup.string().required('Title is required'),
+        readTime: Yup.number()
+            .min(1, 'Minimum read time is 1 minute')
+            .max(5, 'Maximum read time is 5 minutes')
+            .required('Estimated read time is required'),
+        content: Yup.string().required('Content is required'),
+        image: Yup.mixed().test(
+            'image-required',
+            'Image is required',
+            (value) => value instanceof File || Boolean(articleData?.profilePicture)
+        ),
+        type: Yup.string().required('Type is required'),
+        // subCategory: Yup.string().required('SubCategory is required'),
+    });
 
 
 
@@ -139,17 +172,28 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to update article');
+                let errorMessage = 'Failed to update article';
+
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData?.message || errorData?.error?.details?.MESSAGE || errorMessage;
+                } catch (_) {
+                    // Keep the fallback message when the API does not return JSON.
+                }
+
+                throw new Error(errorMessage);
             }
 
             return response.json();
         },
         onSuccess: () => {
-            queryClient.invalidateQueries('articles'); // Assuming you have a query with this key
+            queryClient.invalidateQueries({ queryKey: ['articles'] });
+            setSubmitError('');
             onClose();
         },
         onError: (error) => {
-            console.error('Error creating article:', error);
+            setSubmitError(error.message || 'Failed to update article');
+            console.error('Error updating article:', error);
         },
     });
 
@@ -160,27 +204,33 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
 
     const formik = useFormik({
         initialValues: {
-            title: propsData?.title,
-            readTime: propsData?.readTime,
-            content: propsData?.description,
-            image: propsData?.profilePicture,
-            type: propsData?.type,
+            title: articleData?.title || '',
+            readTime: articleData?.readTime || '',
+            content: articleData?.description || '',
+            image: null,
+            type: articleData?.type || '',
             // subCategory: propsData?.category,
         },
         validationSchema,
         enableReinitialize: true,
         onSubmit: (values) => {
+            setSubmitError('');
             const date = new Date();
             const formattedDate = date.toISOString();
             const formData = new FormData();
-            formData.append('id', propsData?._id)
+            formData.append('id', articleData?._id);
             formData.append('title', values.title);
             formData.append('readTime', values.readTime);
             formData.append('description', values.content);
-            formData.append('file', values.image);
             formData.append('mediatype', 'image');
+            formData.append('mediaType', 'image');
             formData.append('publishedTime', formattedDate);
             formData.append('type', values.type); // New field
+
+            if (values.image instanceof File) {
+                formData.append('file', values.image);
+            }
+
             // formData.append('subCategory', values.subCategory); // New field
             // console.log("adfasdfasdf")
             mutation.mutate(formData);
@@ -209,10 +259,10 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
     }
 
     const { darkMode } = useSelector((state) => state.darkMode);
-    const profilePictureUrl = propsData?.profilePicture
-        ? isValidUrl(propsData?.profilePicture)
-            ? propsData?.profilePicture
-            : `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${propsData?.profilePicture}`
+    const profilePictureUrl = articleData?.profilePicture
+        ? isValidUrl(articleData?.profilePicture)
+            ? articleData?.profilePicture
+            : `${import.meta.env.VITE_APP_API_URL}/uploads/images/${articleData?.profilePicture}`
         : avatar;
 
     const handleUploadClick = () => {
@@ -220,10 +270,11 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
     };
 
     useEffect(() => {
-        if (propsData) {
-
+        if (!isOpen) {
+            setSubmitError('');
+            setImage(null);
         }
-    }, [propsData]);
+    }, [isOpen]);
 
 
 
@@ -272,7 +323,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                                                 <Upload className="w-4 h-4 text-[#75767F]" onClick={handleUploadClick} />
                                             </div>
                                         </div>
-                                        {formik.errors.image && <div className="text-red-500 text-sm">{formik.errors.image}</div>}
+                                        {formik.errors.image && !articleData?.profilePicture && <div className="text-red-500 text-sm">{formik.errors.image}</div>}
                                         <div className='font-normal text-[#75767F] mt-2 text-[16px]'> Posted By: Admin </div>
                                         <div className='font-medium text-[#75767F] text-[20px]'>
                                             <Input
@@ -364,10 +415,10 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                                             {formik.errors.subCategory && <div className="text-red-500 text-sm">{formik.errors.subCategory}</div>}
                                         </div> */}
 
-                                        <Button type="submit" className="mt-4" disabled={mutation.isLoading}>
-                                            {mutation.isLoading ? 'Submitting...' : 'Submit'}
+                                        <Button type="submit" className="mt-4" disabled={mutation.isPending}>
+                                            {mutation.isPending ? 'Submitting...' : 'Submit'}
                                         </Button>
-                                        {mutation.isError && <div className="text-red-500 text-sm">Error: {mutation.error?.message}</div>}
+                                        {submitError && <div className="text-red-500 text-sm">Error: {submitError}</div>}
                                     </div>
                                 </div>
                             </div>

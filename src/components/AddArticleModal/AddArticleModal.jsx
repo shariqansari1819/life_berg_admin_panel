@@ -11,8 +11,7 @@ import { Input } from '../Input/Input';
 import { X, Upload, Book } from 'lucide-react';
 import { Card } from '../../components/Card/Card';
 import { cn } from '../../lib/utils';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const modules = {
   toolbar: [
@@ -55,6 +54,7 @@ const formats = [
 
 export function AddArticlesModal({ isOpen, onClose, data }) {
   const [image, setImage] = useState(null);
+  const [submitError, setSubmitError] = useState('');
   const fileInputRef = useRef(null);
   const queryClient = useQueryClient();
 
@@ -91,16 +91,29 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create article');
+        let errorMessage = 'Failed to create article';
+
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData?.message || errorData?.error?.details?.MESSAGE || errorMessage;
+        } catch (_) {
+          // Keep the fallback message when the API does not return JSON.
+        }
+
+        throw new Error(errorMessage);
       }
 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries('articles'); // Assuming you have a query with this key
+      queryClient.invalidateQueries({ queryKey: ['articles'] });
+      setSubmitError('');
+      formik.resetForm();
+      setImage(null);
       onClose();
     },
     onError: (error) => {
+      setSubmitError(error.message || 'Failed to create article');
       console.error('Error creating article:', error);
     },
   });
@@ -116,6 +129,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
     },
     validationSchema,
     onSubmit: (values) => {
+      setSubmitError('');
       const date = new Date();
       const formattedDate = date.toISOString();
 
@@ -125,6 +139,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
       formData.append('description', values.content);
       formData.append('file', values.image);
       formData.append('mediatype', 'image');
+      formData.append('mediaType', 'image');
       formData.append('publishedTime', formattedDate);
       formData.append('type', values.type); // New field
       // formData.append('subCategory', values.subCategory); // New field
@@ -146,11 +161,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
   };
 
   const { darkMode } = useSelector((state) => state.darkMode);
-  const profilePictureUrl = data?.profilePicture
-    ? isValidUrl(data?.profilePicture)
-      ? data?.profilePicture
-      : `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${data?.profilePicture}`
-    : avatar;
+  const profilePictureUrl = avatar;
 
   const handleUploadClick = () => {
     fileInputRef.current.click();
@@ -298,10 +309,10 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
                       {formik.errors.subCategory && <div className="text-red-500 text-sm">{formik.errors.subCategory}</div>}
                     </div> */}
 
-                    <Button type="submit" className="mt-4" disabled={mutation.isLoading}>
-                      {mutation.isLoading ? 'Submitting...' : 'Submit'}
+                    <Button type="submit" className="mt-4" disabled={mutation.isPending}>
+                      {mutation.isPending ? 'Submitting...' : 'Submit'}
                     </Button>
-                    {mutation.isError && <div className="text-red-500 text-sm">Error: {mutation.error?.message}</div>}
+                    {submitError && <div className="text-red-500 text-sm">Error: {submitError}</div>}
                   </div>
                 </div>
               </div>

@@ -9,7 +9,8 @@ import avatar from "../../assets/avatar.jpg"
 import { Button } from '../Button/Button';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // import styles
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 const modules = {
     toolbar: [
@@ -35,7 +36,6 @@ const modules = {
 ];
 
 export function ArticlesModal({ isOpen, onClose, data }) {
-    console.log("data", data)
     const [editorValue, setEditorValue] = useState('');
 
 
@@ -56,10 +56,48 @@ export function ArticlesModal({ isOpen, onClose, data }) {
         }
     }
     const { darkMode } = useSelector((state) => state.darkMode);
-    const profilePictureUrl = data?.profilePicture
-        ? isValidUrl(data?.profilePicture)
-            ? data?.profilePicture
-            : `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${data?.profilePicture}`
+    const { data: articleDetail } = useQuery({
+        queryKey: ['article-detail', data?._id],
+        enabled: Boolean(isOpen && data?._id),
+        queryFn: async () => {
+            const token = localStorage.getItem('authToken');
+            const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/detail/${data?._id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load article details');
+            }
+
+            return response.json();
+        },
+    });
+
+    const articleData = useMemo(() => {
+        const detailedArticle =
+            articleDetail?.message?.newsArticle ||
+            articleDetail?.message?.article ||
+            articleDetail?.message ||
+            articleDetail?.data;
+
+        const mergedArticle = detailedArticle ? { ...data, ...detailedArticle } : data;
+
+        return {
+            ...mergedArticle,
+            profilePicture: mergedArticle?.profilePicture || mergedArticle?.media?.url || '',
+        };
+    }, [articleDetail, data]);
+
+    useEffect(() => {
+        setEditorValue(articleData?.description || '');
+    }, [articleData?.description]);
+
+    const profilePictureUrl = articleData?.profilePicture
+        ? isValidUrl(articleData?.profilePicture)
+            ? articleData?.profilePicture
+            : `${import.meta.env.VITE_APP_API_URL}/uploads/images/${articleData?.profilePicture}`
         : avatar;
 
     return (
@@ -99,17 +137,17 @@ export function ArticlesModal({ isOpen, onClose, data }) {
                                         </div>
                                     </div>
                                     <div className='font-normal text-[#75767F] mt-2 text-[16px]'> Posted By: Admin </div>
-                                    <div className='font-medium text-[#75767F] text-[20px]'>{data?.title}</div>
+                                    <div className='font-medium text-[#75767F] text-[20px]'>{articleData?.title}</div>
                                     <div className='flex items-center justify-between w-full py-2'>
                                         <div className=' flex items-center text-[#75767F] text-[16px]'> <span > <CalendarClock className='text-[16px]' /> </span> &nbsp; <span>Upload date:</span> </div>
-                                        <div> <span className='text-[#75767F] text-[16px]'> {moment(data?.publishedTime).format('MMM D, YYYY')} </span> </div>
+                                        <div> <span className='text-[#75767F] text-[16px]'> {moment(articleData?.publishedTime).format('MMM D, YYYY')} </span> </div>
                                     </div>
                                     <div className='flex items-center justify-between w-full'>
                                         <div className=' flex items-center text-[#75767F] text-[16px]'> <span > <Book className='text-[16px]' /> </span> &nbsp; <span>Estimated read time:</span> </div>
-                                        <div> <span className='text-[#75767F] text-[16px]'>{data?.readTime} </span> </div>
+                                        <div> <span className='text-[#75767F] text-[16px]'>{articleData?.readTime} </span> </div>
                                     </div>
 
-                                    <div className='w-full ql-editor' dangerouslySetInnerHTML={{ __html: data.description }} />
+                                    <div className='w-full ql-editor' dangerouslySetInnerHTML={{ __html: articleData?.description || '' }} />
 
                                     {/* <div className='flex gap-28'>
                                         <div>
@@ -257,6 +295,4 @@ export function ArticlesModal({ isOpen, onClose, data }) {
         </Dialog.Root>
     );
 }
-
-
 
