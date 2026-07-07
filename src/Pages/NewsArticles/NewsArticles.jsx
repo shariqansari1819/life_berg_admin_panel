@@ -89,7 +89,7 @@ export function NewsArticles() {
         accessorKey: 'title',
         cell: ({ row }) => {
           const profilePicture = row.original.profilePicture;
-          const profilePictureUrl = profilePicture ?  `${import.meta.env.VITE_APP_BASE_URL}/uploads/images/${profilePicture}`
+          const profilePictureUrl = profilePicture ?  `${profilePicture}`
             : avatar;
           return (
             <div className="flex items-center gap-2">
