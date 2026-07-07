@@ -143,10 +143,6 @@ export function ArticlesModal({ isOpen, onClose, data }) {
       : `${import.meta.env.VITE_APP_API_URL}/uploads/images/${articleData?.profilePicture}`
     : avatar;
 
-  const plainTextContent = articleData?.description
-    ? articleData.description.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
-    : '';
-
   return (
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
       <Dialog.Portal>
@@ -164,12 +160,6 @@ export function ArticlesModal({ isOpen, onClose, data }) {
               <div className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
                 <div className="text-xs uppercase tracking-[0.22em] text-white/65">Category</div>
                 <div className="mt-2 text-lg font-medium capitalize">{articleData?.type}</div>
-              </div>
-              <div className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
-                <div className="text-xs uppercase tracking-[0.22em] text-white/65">Reading Snapshot</div>
-                <div className="mt-2 text-sm leading-6 text-white/82">
-                  {plainTextContent ? `${plainTextContent.slice(0, 140)}${plainTextContent.length > 140 ? '...' : ''}` : 'No content available yet.'}
-                </div>
               </div>
             </div>
           </div>
@@ -250,7 +240,7 @@ export function ArticlesModal({ isOpen, onClose, data }) {
                     <div className="space-y-5">
                       <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
                         <div className="text-xs uppercase tracking-[0.22em] text-slate-400">Headline</div>
-                        <h2 className="mt-3 text-3xl font-semibold leading-tight text-slate-900">
+                        <h2 className="mt-3 text-2xl font-semibold leading-tight text-slate-900 xl:text-[34px]">
                           {articleData?.title}
                         </h2>
                       </div>
