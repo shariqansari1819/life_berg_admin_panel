@@ -57,6 +57,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
   const [submitError, setSubmitError] = useState('');
   const fileInputRef = useRef(null);
   const queryClient = useQueryClient();
+  const articleAuthor = localStorage.getItem('email') || 'Admin';
 
   // Fetch subcategories using tanStack Query
   // const { data: subCategories = [], error: subCategoriesError, isLoading: isSubCategoriesLoading } = useQuery({
@@ -142,6 +143,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
       formData.append('mediaType', 'image');
       formData.append('publishedTime', formattedDate);
       formData.append('type', values.type); // New field
+      formData.append('author', articleAuthor);
       // formData.append('subCategory', values.subCategory); // New field
 
       mutation.mutate(formData);

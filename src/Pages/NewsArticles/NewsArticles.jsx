@@ -317,11 +317,12 @@ export function NewsArticles() {
     if (data && data.success) {
       return data?.message?.newsArticles?.docs.map(article => ({
         _id: article._id,
-        title: article?.title,
-        description: article?.description,
-        type: article?.type,
-        readTime: article?.readTime,
-        publishedTime: article?.publishedTime,
+        title: article?.title || article?.name,
+        description: article?.description || article?.content || article?.body || article?.details,
+        type: article?.type || article?.category,
+        readTime: article?.readTime || article?.estimatedReadTime,
+        publishedTime: article?.publishedTime || article?.createdAt,
+        author: article?.author || article?.postedBy || article?.createdBy?.email || article?.createdBy?.name,
         currentStreak: article?.currentStreak,
         profilePicture: article?.media?.url,
         subCategory: article?.subCategory?.name,
@@ -630,6 +631,5 @@ export function NewsArticles() {
     </div>
   );
 }
-
 
 

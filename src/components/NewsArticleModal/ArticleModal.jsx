@@ -36,17 +36,6 @@ const modules = {
 ];
 
 export function ArticlesModal({ isOpen, onClose, data }) {
-    const [editorValue, setEditorValue] = useState('');
-
-
-    const handleChange = (content, delta, source, editor) => {
-        setEditorValue(content);
-        if (onChange) {
-            onChange(content);
-        }
-    };
-
-
     function isValidUrl(string) {
         try {
             new URL(string);
@@ -55,6 +44,28 @@ export function ArticlesModal({ isOpen, onClose, data }) {
             return false;
         }
     }
+
+    function resolveArticleFromResponse(responseData, fallbackData) {
+        const candidates = [
+            responseData?.message?.newsArticle,
+            responseData?.message?.article,
+            responseData?.message?.data,
+            responseData?.message?.doc,
+            responseData?.data?.newsArticle,
+            responseData?.data?.article,
+            responseData?.data?.doc,
+            responseData?.data,
+            responseData?.message,
+            fallbackData,
+        ];
+
+        return candidates.find((candidate) => candidate && typeof candidate === 'object') || fallbackData;
+    }
+
+    function getArticleContent(article) {
+        return article?.description || article?.content || article?.body || article?.details || '';
+    }
+
     const { darkMode } = useSelector((state) => state.darkMode);
     const { data: articleDetail } = useQuery({
         queryKey: ['article-detail', data?._id],
@@ -76,23 +87,19 @@ export function ArticlesModal({ isOpen, onClose, data }) {
     });
 
     const articleData = useMemo(() => {
-        const detailedArticle =
-            articleDetail?.message?.newsArticle ||
-            articleDetail?.message?.article ||
-            articleDetail?.message ||
-            articleDetail?.data;
-
+        const detailedArticle = resolveArticleFromResponse(articleDetail, data);
         const mergedArticle = detailedArticle ? { ...data, ...detailedArticle } : data;
 
         return {
             ...mergedArticle,
+            title: mergedArticle?.title || mergedArticle?.name || '',
+            readTime: mergedArticle?.readTime || mergedArticle?.estimatedReadTime || '',
+            publishedTime: mergedArticle?.publishedTime || mergedArticle?.createdAt || '',
+            author: mergedArticle?.author || mergedArticle?.postedBy || mergedArticle?.createdBy?.email || mergedArticle?.createdBy?.name || 'Admin',
+            description: getArticleContent(mergedArticle),
             profilePicture: mergedArticle?.profilePicture || mergedArticle?.media?.url || '',
         };
     }, [articleDetail, data]);
-
-    useEffect(() => {
-        setEditorValue(articleData?.description || '');
-    }, [articleData?.description]);
 
     const profilePictureUrl = articleData?.profilePicture
         ? isValidUrl(articleData?.profilePicture)
@@ -136,7 +143,7 @@ export function ArticlesModal({ isOpen, onClose, data }) {
                                             <Upload className="w-4 h-4 text-[#75767F]" />
                                         </div>
                                     </div>
-                                    <div className='font-normal text-[#75767F] mt-2 text-[16px]'> Posted By: Admin </div>
+                                    <div className='font-normal text-[#75767F] mt-2 text-[16px]'> Posted By: {articleData?.author} </div>
                                     <div className='font-medium text-[#75767F] text-[20px]'>{articleData?.title}</div>
                                     <div className='flex items-center justify-between w-full py-2'>
                                         <div className=' flex items-center text-[#75767F] text-[16px]'> <span > <CalendarClock className='text-[16px]' /> </span> &nbsp; <span>Upload date:</span> </div>
@@ -147,7 +154,11 @@ export function ArticlesModal({ isOpen, onClose, data }) {
                                         <div> <span className='text-[#75767F] text-[16px]'>{articleData?.readTime} </span> </div>
                                     </div>
 
-                                    <div className='w-full ql-editor' dangerouslySetInnerHTML={{ __html: articleData?.description || '' }} />
+                                    {
+                                        articleData?.description?.includes('<')
+                                            ? <div className='w-full ql-editor' dangerouslySetInnerHTML={{ __html: articleData.description }} />
+                                            : <div className='w-full whitespace-pre-wrap text-[#75767F] text-[16px] leading-7 py-4'>{articleData?.description || 'No content available.'}</div>
+                                    }
 
                                     {/* <div className='flex gap-28'>
                                         <div>
@@ -295,4 +306,3 @@ export function ArticlesModal({ isOpen, onClose, data }) {
         </Dialog.Root>
     );
 }
-
