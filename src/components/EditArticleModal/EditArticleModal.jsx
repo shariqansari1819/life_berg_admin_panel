@@ -244,6 +244,9 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
             formData.append('title', values.title);
             formData.append('readTime', values.readTime);
             formData.append('description', values.content);
+            formData.append('content', values.content);
+            formData.append('body', values.content);
+            formData.append('details', values.content);
             formData.append('mediatype', 'image');
             formData.append('mediaType', 'image');
             formData.append('publishedTime', formattedDate);
