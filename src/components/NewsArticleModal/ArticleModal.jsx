@@ -240,7 +240,7 @@ export function ArticlesModal({ isOpen, onClose, data }) {
                     <div className="space-y-5">
                       <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
                         <div className="text-xs uppercase tracking-[0.22em] text-slate-400">Headline</div>
-                        <h2 className="mt-3 text-2xl font-semibold leading-tight text-slate-900 xl:text-[34px]">
+                        <h2 className="mt-3 text-[17px] font-semibold leading-7 text-slate-900">
                           {articleData?.title}
                         </h2>
                       </div>

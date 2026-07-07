@@ -117,7 +117,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
   const [submitError, setSubmitError] = useState('');
   const fileInputRef = useRef(null);
   const queryClient = useQueryClient();
-  const articleAuthor = localStorage.getItem('email') || 'Admin';
+  const articleAuthor = 'Hanh';
 
   const { data: articleDetail, isLoading } = useQuery({
     queryKey: ['article-detail-edit', propsData?._id],
@@ -140,16 +140,20 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
 
   const articleData = useMemo(() => {
     const resolvedArticleData = resolveArticleFromResponse(articleDetail, propsData);
+    const mergedArticleData = {
+      ...(propsData || {}),
+      ...(resolvedArticleData || {}),
+    };
 
     return {
-      ...resolvedArticleData,
-      title: resolvedArticleData?.title || resolvedArticleData?.name || '',
-      readTime: resolvedArticleData?.readTime || resolvedArticleData?.estimatedReadTime || '',
-      type: resolvedArticleData?.type || resolvedArticleData?.category || '',
-      order: resolvedArticleData?.order ?? 1,
-      description: getArticleContent(resolvedArticleData),
-      profilePicture: resolvedArticleData?.profilePicture || resolvedArticleData?.media?.url || '',
-      author: resolvedArticleData?.author || resolvedArticleData?.postedBy || resolvedArticleData?.createdBy?.email || resolvedArticleData?.createdBy?.name || articleAuthor,
+      ...mergedArticleData,
+      title: mergedArticleData?.title || mergedArticleData?.name || '',
+      readTime: mergedArticleData?.readTime || mergedArticleData?.estimatedReadTime || '',
+      type: mergedArticleData?.type || mergedArticleData?.category || '',
+      order: mergedArticleData?.order ?? 1,
+      description: getArticleContent(mergedArticleData),
+      profilePicture: mergedArticleData?.profilePicture || mergedArticleData?.media?.url || '',
+      author: articleAuthor,
     };
   }, [articleDetail, propsData, articleAuthor]);
 
