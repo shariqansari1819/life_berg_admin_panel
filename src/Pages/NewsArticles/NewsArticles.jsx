@@ -323,6 +323,7 @@ export function NewsArticles() {
         readTime: article?.readTime || article?.estimatedReadTime,
         publishedTime: article?.publishedTime || article?.createdAt,
         author: article?.author || article?.postedBy || article?.createdBy?.email || article?.createdBy?.name,
+        order: article?.order,
         currentStreak: article?.currentStreak,
         profilePicture: article?.media?.url,
         subCategory: article?.subCategory?.name,
@@ -616,6 +617,7 @@ export function NewsArticles() {
       <AddArticlesModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
+        nextOrder={totalEntries + 1}
       // data={selectedArticle}
       // darkMode={darkMode}
       />
@@ -631,5 +633,4 @@ export function NewsArticles() {
     </div>
   );
 }
-
 

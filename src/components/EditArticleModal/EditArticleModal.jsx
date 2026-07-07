@@ -107,6 +107,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
         title: resolvedArticleData?.title || resolvedArticleData?.name || '',
         readTime: resolvedArticleData?.readTime || resolvedArticleData?.estimatedReadTime || '',
         type: resolvedArticleData?.type || resolvedArticleData?.category || '',
+        order: resolvedArticleData?.order ?? 1,
         description: getArticleContent(resolvedArticleData),
         profilePicture: resolvedArticleData?.profilePicture || resolvedArticleData?.media?.url || '',
     };
@@ -248,6 +249,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
             formData.append('publishedTime', formattedDate);
             formData.append('type', values.type); // New field
             formData.append('author', articleAuthor);
+            formData.append('order', String(articleData?.order ?? 1));
 
             if (values.image instanceof File) {
                 formData.append('file', values.image);

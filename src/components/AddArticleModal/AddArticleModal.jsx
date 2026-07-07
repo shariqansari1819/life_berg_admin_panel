@@ -52,7 +52,7 @@ const formats = [
 //   return response.json();
 // };
 
-export function AddArticlesModal({ isOpen, onClose, data }) {
+export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
   const [image, setImage] = useState(null);
   const [submitError, setSubmitError] = useState('');
   const fileInputRef = useRef(null);
@@ -144,6 +144,7 @@ export function AddArticlesModal({ isOpen, onClose, data }) {
       formData.append('publishedTime', formattedDate);
       formData.append('type', values.type); // New field
       formData.append('author', articleAuthor);
+      formData.append('order', String(nextOrder));
       // formData.append('subCategory', values.subCategory); // New field
 
       mutation.mutate(formData);
