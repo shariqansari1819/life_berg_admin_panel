@@ -89,16 +89,18 @@ export function NewsArticles() {
         accessorKey: 'title',
         cell: ({ row }) => {
           const profilePicture = row.original.profilePicture;
-          const profilePictureUrl = profilePicture ?  `${profilePicture}`
+          const profilePictureUrl = profilePicture ? `${profilePicture}`
             : avatar;
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 items-center gap-3">
               <img
                 src={profilePictureUrl}
                 alt={`${row.original.title}'s profile`}
-                className="w-8 h-8 rounded-full object-cover"
+                className="h-8 w-8 shrink-0 rounded-full object-cover"
               />
-              <span>{row.original.title}</span>
+              <span className="block max-w-[560px] truncate font-medium" title={row.original.title}>
+                {row.original.title}
+              </span>
             </div>
           );
         },
@@ -373,8 +375,14 @@ export function NewsArticles() {
         id: 'moredetails',
         header: 'More Details',
         cell: ({ row }) => (
-          <div className="flex items-center">
-            <span className="cursor-pointer border-blue-600 border-2 text-blue-600 px-4 py-1 rounded-full" onClick={() => handleView(row)}>view more details</span>
+          <div className="flex items-center justify-center">
+            <button
+              type="button"
+              className="inline-flex h-11 min-w-[170px] items-center justify-center rounded-full border-2 border-[#2f6df6] px-5 text-sm font-semibold text-[#2f6df6] transition-colors hover:bg-[#f3f7ff]"
+              onClick={() => handleView(row)}
+            >
+              View More Details
+            </button>
           </div>
         ),
       },
@@ -633,4 +641,3 @@ export function NewsArticles() {
     </div>
   );
 }
-

@@ -1,458 +1,409 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { useSelector } from 'react-redux';
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { BookOpen, ImagePlus, PencilLine, Save, Tag, UserRound, X } from 'lucide-react';
 import avatar from "../../assets/avatar.jpg";
 import { Button } from '../Button/Button';
-import { Input } from '../Input/Input';
-import { X, Upload, Book } from 'lucide-react';
-import { Card } from '../../components/Card/Card';
-import { cn } from '../../lib/utils';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const modules = {
-    toolbar: [
-        [{ 'header': '1' }, { 'header': '2' }, { font: ['serif', 'monospace', 'roboto', 'lobster'] }],
-        [{ size: ['small', 'medium', 'large', 'huge']}],
-        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-        [{ 'align': [] }],
-        [{ 'color': ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }, 
-        { 'background': ['#ffffff', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }],
-        ['link'],
-        ['clean'] // Clear formatting
-    ]
-  };
-  
-  const formats = [
-    'header', 'font', 'size',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', // Ensure these are included
-    'indent',
-    'align', 'link',
-    'color', 'background',
-];
+  toolbar: [
+    [{ header: '1' }, { header: '2' }, { font: ['serif', 'monospace', 'roboto', 'lobster'] }],
+    [{ size: ['small', 'medium', 'large', 'huge'] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+    [{ align: [] }],
+    [{ color: ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] },
+    { background: ['#ffffff', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }],
+    ['link'],
+    ['clean'],
+  ],
+};
 
+function isValidUrl(string) {
+  try {
+    new URL(string);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
 
+function resolveArticleFromResponse(responseData, fallbackData) {
+  const candidates = [
+    responseData?.message?.newsArticle,
+    responseData?.message?.article,
+    responseData?.message?.data,
+    responseData?.message?.doc,
+    responseData?.data?.newsArticle,
+    responseData?.data?.article,
+    responseData?.data?.doc,
+    responseData?.data,
+    responseData?.message,
+    fallbackData,
+  ];
 
+  return candidates.find((candidate) => candidate && typeof candidate === 'object') || fallbackData;
+}
 
-// const fetchSubCategories = async () => {
-//     const token = localStorage.getItem('authToken');
-//     const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/article-subcategory/all`, {
-//       headers: {
-//         'Authorization': `Bearer ${token}`,
-//       },
-//     });
-
-//     if (!response.ok) {
-//       throw new Error('Network response was not ok');
-//     }
-//     return response.json();
-//   };
+function getArticleContent(article) {
+  return article?.description || article?.content || article?.body || article?.details || '';
+}
 
 export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
-    const [image, setImage] = useState(null);
-    const [submitError, setSubmitError] = useState('');
-    const fileInputRef = useRef(null);
-    const queryClient = useQueryClient();
-    const articleAuthor = localStorage.getItem('email') || 'Admin';
+  const [image, setImage] = useState(null);
+  const [submitError, setSubmitError] = useState('');
+  const fileInputRef = useRef(null);
+  const queryClient = useQueryClient();
+  const articleAuthor = localStorage.getItem('email') || 'Admin';
 
-    function resolveArticleFromResponse(responseData, fallbackData) {
-        const candidates = [
-            responseData?.message?.newsArticle,
-            responseData?.message?.article,
-            responseData?.message?.data,
-            responseData?.message?.doc,
-            responseData?.data?.newsArticle,
-            responseData?.data?.article,
-            responseData?.data?.doc,
-            responseData?.data,
-            responseData?.message,
-            fallbackData,
-        ];
-
-        return candidates.find((candidate) => candidate && typeof candidate === 'object') || fallbackData;
-    }
-
-    function getArticleContent(article) {
-        return article?.description || article?.content || article?.body || article?.details || '';
-    }
-
-    const { data: articleDetail } = useQuery({
-        queryKey: ['article-detail-edit', propsData?._id],
-        enabled: Boolean(isOpen && propsData?._id),
-        queryFn: async () => {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/detail/${propsData?._id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to load article details');
-            }
-
-            return response.json();
+  const { data: articleDetail, isLoading } = useQuery({
+    queryKey: ['article-detail-edit', propsData?._id],
+    enabled: Boolean(isOpen && propsData?._id),
+    queryFn: async () => {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/detail/${propsData?._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-    });
+      });
 
+      if (!response.ok) {
+        throw new Error('Failed to load article details');
+      }
+
+      return response.json();
+    },
+  });
+
+  const articleData = useMemo(() => {
     const resolvedArticleData = resolveArticleFromResponse(articleDetail, propsData);
 
-    const articleData = {
-        ...resolvedArticleData,
-        title: resolvedArticleData?.title || resolvedArticleData?.name || '',
-        readTime: resolvedArticleData?.readTime || resolvedArticleData?.estimatedReadTime || '',
-        type: resolvedArticleData?.type || resolvedArticleData?.category || '',
-        order: resolvedArticleData?.order ?? 1,
-        description: getArticleContent(resolvedArticleData),
-        profilePicture: resolvedArticleData?.profilePicture || resolvedArticleData?.media?.url || '',
+    return {
+      ...resolvedArticleData,
+      title: resolvedArticleData?.title || resolvedArticleData?.name || '',
+      readTime: resolvedArticleData?.readTime || resolvedArticleData?.estimatedReadTime || '',
+      type: resolvedArticleData?.type || resolvedArticleData?.category || '',
+      order: resolvedArticleData?.order ?? 1,
+      description: getArticleContent(resolvedArticleData),
+      profilePicture: resolvedArticleData?.profilePicture || resolvedArticleData?.media?.url || '',
+      author: resolvedArticleData?.author || resolvedArticleData?.postedBy || resolvedArticleData?.createdBy?.email || resolvedArticleData?.createdBy?.name || articleAuthor,
     };
+  }, [articleDetail, propsData, articleAuthor]);
 
-    const validationSchema = Yup.object().shape({
-        title: Yup.string().required('Title is required'),
-        readTime: Yup.number()
-            .min(1, 'Minimum read time is 1 minute')
-            .max(5, 'Maximum read time is 5 minutes')
-            .required('Estimated read time is required'),
-        content: Yup.string().required('Content is required'),
-        image: Yup.mixed().test(
-            'image-required',
-            'Image is required',
-            (value) => value instanceof File || Boolean(articleData?.profilePicture)
-        ),
-        type: Yup.string().required('Type is required'),
-        // subCategory: Yup.string().required('SubCategory is required'),
-    });
+  const validationSchema = useMemo(() => Yup.object().shape({
+    title: Yup.string().required('Title is required'),
+    readTime: Yup.number()
+      .min(1, 'Minimum read time is 1 minute')
+      .max(30, 'Maximum read time is 30 minutes')
+      .required('Estimated read time is required'),
+    content: Yup.string().required('Content is required'),
+    image: Yup.mixed().test(
+      'image-required',
+      'Image is required',
+      (value) => value instanceof File || Boolean(articleData?.profilePicture)
+    ),
+    type: Yup.string().required('Type is required'),
+  }), [articleData?.profilePicture]);
 
-
-
-    // const { data: subCategories = [], error: subCategoriesError, isLoading: isSubCategoriesLoading } = useQuery({
-    //     queryKey: ['subCategories'],
-    //     queryFn: fetchSubCategories,
-    //   });
-
-
-    // const { articleDetail, error: articleDetailError, isLoading: isarticleDetailLoading } = useQuery({
-    //     queryKey: ['details', data?._id],  // Add the article ID to the query key
-    //     queryFn: async () => {
-    //         const token = localStorage.getItem('authToken');
-    //         const response = await fetch(`http://localhost:5001/api/admin/news-article/detail/${data?._id}`, {
-    //             headers: {
-    //                 'Authorization': `Bearer ${token}`,
-    //             },
-    //         });
-    //         console.log("response<><><>", response);
-    //         if (!response.ok) {
-    //             throw new Error('Network response was not ok');
-    //         }
-    //         const data = await response.json();
-    //         console.log('Fetched article Details:', data); // Debugging line
-    //         return data;
-    //     },
-    //     keepPreviousData: true,
-    // });
-
-
-    // const { articleDatail, error, isLoading } = useQuery({
-    //     queryKey: ['articles details'],
-    //     queryFn: async () => {
-    //       const token = localStorage.getItem('authToken');
-    //       const response = await fetch(`http://localhost:5001/api/admin/news-article/detail/${propsData?._id}`, {
-    //         method: 'POST',
-    //         headers: {
-    //           'Authorization': `Bearer ${token}`,
-    //         },
-    //       });
-    //       // console.log("response", response)
-    //       if (!response.ok) {
-    //         throw new Error('Network response was not ok');
-    //       }
-    //       console.log("reposne", response)
-    //       return response.json();
-    //     },
-    //     keepPreviousData: true,
-
-    //   });
-
-
-
-
-
-    const mutation = useMutation({
-        mutationFn: async (newArticle) => {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/update`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: newArticle,
-            });
-
-            if (!response.ok) {
-                let errorMessage = 'Failed to update article';
-
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData?.message || errorData?.error?.details?.MESSAGE || errorMessage;
-                } catch (_) {
-                    // Keep the fallback message when the API does not return JSON.
-                }
-
-                throw new Error(errorMessage);
-            }
-
-            return response.json();
+  const mutation = useMutation({
+    mutationFn: async (newArticle) => {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/update`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['articles'] });
-            setSubmitError('');
-            onClose();
-        },
-        onError: (error) => {
-            setSubmitError(error.message || 'Failed to update article');
-            console.error('Error updating article:', error);
-        },
-    });
+        body: newArticle,
+      });
 
+      if (!response.ok) {
+        let errorMessage = 'Failed to update article';
 
-
-
-    // console.log("articleDatail", articleDatail)
-
-    const formik = useFormik({
-        initialValues: {
-            title: articleData?.title || '',
-            readTime: articleData?.readTime || '',
-            content: articleData?.description || '',
-            image: null,
-            type: articleData?.type || '',
-            // subCategory: propsData?.category,
-        },
-        validationSchema,
-        enableReinitialize: true,
-        onSubmit: (values) => {
-            setSubmitError('');
-            const date = new Date();
-            const formattedDate = date.toISOString();
-            const formData = new FormData();
-            formData.append('id', articleData?._id);
-            formData.append('title', values.title);
-            formData.append('readTime', values.readTime);
-            formData.append('description', values.content);
-            formData.append('content', values.content);
-            formData.append('body', values.content);
-            formData.append('details', values.content);
-            formData.append('mediatype', 'image');
-            formData.append('mediaType', 'image');
-            formData.append('publishedTime', formattedDate);
-            formData.append('type', values.type); // New field
-            formData.append('author', articleAuthor);
-            formData.append('order', String(articleData?.order ?? 1));
-
-            if (values.image instanceof File) {
-                formData.append('file', values.image);
-            }
-
-            // formData.append('subCategory', values.subCategory); // New field
-            // console.log("adfasdfasdf")
-            mutation.mutate(formData);
-        },
-    });
-
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImage(reader.result);
-                formik.setFieldValue('image', file);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    function isValidUrl(string) {
         try {
-            new URL(string);
-            return true;
+          const errorData = await response.json();
+          errorMessage = errorData?.message || errorData?.error?.details?.MESSAGE || errorMessage;
         } catch (_) {
-            return false;
+          // Keep fallback text.
         }
-    }
 
-    const { darkMode } = useSelector((state) => state.darkMode);
-    const profilePictureUrl = articleData?.profilePicture
-        ? isValidUrl(articleData?.profilePicture)
-            ? articleData?.profilePicture
-            : `${import.meta.env.VITE_APP_API_URL}/uploads/images/${articleData?.profilePicture}`
-        : avatar;
+        throw new Error(errorMessage);
+      }
 
-    const handleUploadClick = () => {
-        fileInputRef.current.click();
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['articles'] });
+      setSubmitError('');
+      onClose();
+    },
+    onError: (error) => {
+      setSubmitError(error.message || 'Failed to update article');
+    },
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      title: articleData?.title || '',
+      readTime: articleData?.readTime || '',
+      content: articleData?.description || '',
+      image: null,
+      type: articleData?.type || '',
+    },
+    validationSchema,
+    enableReinitialize: true,
+    onSubmit: (values) => {
+      setSubmitError('');
+      const date = new Date();
+      const formattedDate = date.toISOString();
+      const formData = new FormData();
+
+      formData.append('id', articleData?._id);
+      formData.append('title', values.title);
+      formData.append('readTime', values.readTime);
+      formData.append('description', values.content);
+      formData.append('content', values.content);
+      formData.append('body', values.content);
+      formData.append('details', values.content);
+      formData.append('mediatype', 'image');
+      formData.append('mediaType', 'image');
+      formData.append('publishedTime', formattedDate);
+      formData.append('type', values.type);
+      formData.append('author', articleAuthor);
+      formData.append('order', String(articleData?.order ?? 1));
+
+      if (values.image instanceof File) {
+        formData.append('file', values.image);
+      }
+
+      mutation.mutate(formData);
+    },
+  });
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImage(reader.result);
+      formik.setFieldValue('image', file);
     };
+    reader.readAsDataURL(file);
+  };
 
-    useEffect(() => {
-        if (!isOpen) {
-            setSubmitError('');
-            setImage(null);
-        }
-    }, [isOpen]);
+  const profilePictureUrl = articleData?.profilePicture
+    ? isValidUrl(articleData?.profilePicture)
+      ? articleData?.profilePicture
+      : `${import.meta.env.VITE_APP_API_URL}/uploads/images/${articleData?.profilePicture}`
+    : avatar;
 
+  useEffect(() => {
+    if (!isOpen) {
+      setSubmitError('');
+      setImage(null);
+    }
+  }, [isOpen]);
 
+  return (
+    <Dialog.Root open={isOpen} onOpenChange={onClose}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-sm" />
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 flex h-[90vh] w-[min(1180px,96vw)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[28px] bg-[#fbfaf7] shadow-[0_30px_120px_rgba(15,23,42,0.28)]">
+          <div className="flex items-start justify-between border-b border-slate-200 bg-white/80 px-6 py-5 backdrop-blur-sm sm:px-8">
+            <div>
+              <Dialog.Title className="text-2xl font-semibold text-slate-900">Edit Article</Dialog.Title>
+              <Dialog.Description className="mt-1 text-sm text-slate-500">
+                Update the cover, article metadata, and full body content in one place.
+              </Dialog.Description>
+            </div>
+            <Dialog.Close asChild>
+              <button
+                type="button"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </Dialog.Close>
+          </div>
 
+          <form onSubmit={formik.handleSubmit} className="flex min-h-0 flex-1 flex-col">
+            <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6 sm:px-8">
+              {isLoading ? (
+                <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center text-slate-500">
+                  Loading article details...
+                </div>
+              ) : (
+                <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
+                  <aside className="space-y-5">
+                    <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
+                      <div className="aspect-[4/3] overflow-hidden bg-slate-100">
+                        <img
+                          src={image || profilePictureUrl}
+                          alt={articleData?.title || 'Article cover'}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div className="p-5">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100"
+                        >
+                          <ImagePlus className="h-4 w-4" />
+                          Change Cover Image
+                        </button>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          ref={fileInputRef}
+                          className="hidden"
+                          onChange={handleImageChange}
+                        />
+                        {formik.errors.image && !articleData?.profilePicture && (
+                          <div className="mt-3 text-sm text-red-500">{formik.errors.image}</div>
+                        )}
+                      </div>
+                    </div>
 
-
-    return (
-        <Dialog.Root open={isOpen} onOpenChange={onClose}>
-            <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-30" />
-            <Dialog.Content className={cn(
-                "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md",
-                "dark:bg-gray-800 dark:text-muted w-9/12"
-            )}>
-                <Dialog.Description>
-                    <form onSubmit={formik.handleSubmit}>
-                        <Card className="bg-[#f9f9f9] shadow-md rounded-[4px] overflow-hidden">
-                            <div className="flex h-full">
-                                <div className="w-[200px] bg-white py-5 px-4 space-y-[6px] text-[13px] border-r border-gray-200">
-                                    <h2 className="font-semibold text-[15px] mb-4">Edit Content</h2>
-                                    <div className="text-[#2d87f3] font-medium">Basic Information</div>
-                                    {/* <div className="text-gray-600">Attachments & Details</div>
-                                    <div className="text-gray-600">Preview</div> */}
-                                </div>
-                                <div className="flex-1 p-5 relative">
-                                    <button className="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-                                        <Dialog.Close asChild>
-                                            <button className={cn("rounded-full transition-colors p-1 duration-300 rounded-full bg-gray-100 dark:bg-gray-800 text-foreground", "dark:text-gray-100 dark:bg-gray-900 dark:hover:text-gray-100 dark:hover:bg-gray-400")}>
-                                                <X className="h-5 w-5" />
-                                            </button>
-                                        </Dialog.Close>
-                                    </button>
-                                    <div className="flex flex-col items-start h-[500px] overflow-scroll overflow-x-hidden">
-                                        <div className="relative w-24 h-24">
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                ref={fileInputRef}
-                                                style={{ display: "none" }}
-                                                onChange={handleImageChange}
-                                            />
-                                            <img
-                                                src={image ? image : profilePictureUrl}
-                                                alt="Uploaded content"
-                                                className="w-full h-full object-cover rounded-lg"
-                                            />
-                                            <div className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-lg cursor-pointer">
-                                                <Upload className="w-4 h-4 text-[#75767F]" onClick={handleUploadClick} />
-                                            </div>
-                                        </div>
-                                        {formik.errors.image && !articleData?.profilePicture && <div className="text-red-500 text-sm">{formik.errors.image}</div>}
-                                        <div className='font-normal text-[#75767F] mt-2 text-[16px]'> Posted By: Admin </div>
-                                        <div className='font-medium text-[#75767F] text-[20px]'>
-                                            <Input
-                                                type="text"
-                                                name="title"
-                                                className="border-none"
-                                                placeholder="Add a title here..."
-                                                onChange={formik.handleChange}
-                                                value={formik.values.title}
-                                            />
-                                            {formik.errors.title && <div className="text-red-500 text-sm">{formik.errors.title}</div>}
-                                        </div>
-                                        <div className='flex items-center justify-between w-full'>
-                                            <div className=' flex items-center text-[#75767F] text-[16px]'>
-                                                <Book className='text-[16px]' /> &nbsp; <span>Estimated read time:</span>
-                                            </div>
-                                            <div className='flex items-center'>
-                                                <Input
-                                                    type="number"
-                                                    name="readTime"
-                                                    min="1"
-                                                    max="5"
-                                                    onChange={formik.handleChange}
-                                                    value={formik.values.readTime}
-                                                    className="h-8"
-                                                />
-                                                &nbsp; <span> min </span>
-                                            </div>
-                                        </div>
-                                        {formik.errors.readTime && <div className="text-red-500 text-sm">{formik.errors.readTime}</div>}
-                                        <div className="w-full h-[2px] bg-blue-100 my-2 "></div>
-                                        <div className='flex items-center justify-between w-full'>
-                                            <div className=' flex items-center text-[#75767F] text-[16px]'><span>Details:</span></div>
-                                        </div>
-                                        <div className="text-editor w-full">
-                                            <ReactQuill
-                                                value={formik.values.content}
-                                                onChange={value => formik.setFieldValue('content', value)}
-                                                modules={modules}
-                                               
-                                                placeholder="Write something awesome..."
-                                            />
-                                            {formik.errors.content && <div className="text-red-500 text-sm">{formik.errors.content}</div>}
-                                        </div>
-
-                                        {/* New Fields */}
-                                        <div className="mt-4 w-full">
-                                            <label htmlFor="type" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Type
-                                            </label>
-                                            <select
-                                                id="type"
-                                                name="type"
-                                                onChange={formik.handleChange}
-                                                value={formik.values.type}
-                                                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                                            >
-                                                <option value="" label="Select type" />
-                                                <option value="general" label="General" />
-                                                <option value="medical" label="Medical" />
-                                            </select>
-                                            {formik.errors.type && <div className="text-red-500 text-sm">{formik.errors.type}</div>}
-                                        </div>
-
-                                        {/* <div className="mt-4 w-full">
-                                            <label htmlFor="subCategory" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                SubCategory
-                                            </label>
-                                            <select
-                                                id="subCategory"
-                                                name="subCategory"
-                                                onChange={formik.handleChange}
-                                                value={formik.values.subCategory}
-                                                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                                            >
-                                                <option value="" label="Select subcategory" />
-                                                {isSubCategoriesLoading ? (
-                                                    <option>Loading...</option>
-                                                ) : subCategoriesError ? (
-                                                    <option>Error loading subcategories</option>
-                                                ) : (
-                                                    subCategories?.data?.map((subcategory) => (
-                                                        <option key={subcategory._id} value={subcategory._id}>
-                                                            {subcategory.name}
-                                                        </option>
-                                                    ))
-                                                )}
-                                            </select>
-                                            {formik.errors.subCategory && <div className="text-red-500 text-sm">{formik.errors.subCategory}</div>}
-                                        </div> */}
-
-                                        <Button type="submit" className="mt-4" disabled={mutation.isPending}>
-                                            {mutation.isPending ? 'Submitting...' : 'Submit'}
-                                        </Button>
-                                        {submitError && <div className="text-red-500 text-sm">Error: {submitError}</div>}
-                                    </div>
-                                </div>
+                    <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+                      <div className="text-xs uppercase tracking-[0.22em] text-slate-400">Publishing Info</div>
+                      <div className="mt-4 space-y-4 text-sm text-slate-600">
+                        <div className="flex items-start gap-3">
+                          <UserRound className="mt-0.5 h-4 w-4 text-slate-400" />
+                          <div>
+                            <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Author</div>
+                            <div className="mt-1 font-medium text-slate-700">{articleData?.author}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <Tag className="mt-0.5 h-4 w-4 text-slate-400" />
+                          <div>
+                            <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Order</div>
+                            <div className="mt-1 font-medium text-slate-700">{articleData?.order}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <BookOpen className="mt-0.5 h-4 w-4 text-slate-400" />
+                          <div>
+                            <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Preview</div>
+                            <div className="mt-1 font-medium text-slate-700">
+                              {formik.values.content
+                                ? `${formik.values.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120)}${formik.values.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().length > 120 ? '...' : ''}`
+                                : 'Start writing to see the preview.'}
                             </div>
-                        </Card>
-                    </form>
-                </Dialog.Description>
-            </Dialog.Content>
-        </Dialog.Root>
-    );
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </aside>
+
+                  <section className="space-y-5">
+                    <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
+                      <div className="mb-5 flex items-center gap-3">
+                        <PencilLine className="h-5 w-5 text-[#1e5eff]" />
+                        <h3 className="text-lg font-semibold text-slate-900">Article Basics</h3>
+                      </div>
+
+                      <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_180px_180px]">
+                        <label className="block">
+                          <span className="mb-2 block text-sm font-medium text-slate-700">Title</span>
+                          <input
+                            type="text"
+                            name="title"
+                            value={formik.values.title}
+                            onChange={formik.handleChange}
+                            placeholder="Add a clear headline..."
+                            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-[#1e5eff] focus:bg-white"
+                          />
+                          {formik.errors.title && <div className="mt-2 text-sm text-red-500">{formik.errors.title}</div>}
+                        </label>
+
+                        <label className="block">
+                          <span className="mb-2 block text-sm font-medium text-slate-700">Read Time</span>
+                          <input
+                            type="number"
+                            name="readTime"
+                            min="1"
+                            max="30"
+                            value={formik.values.readTime}
+                            onChange={formik.handleChange}
+                            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-[#1e5eff] focus:bg-white"
+                          />
+                          {formik.errors.readTime && <div className="mt-2 text-sm text-red-500">{formik.errors.readTime}</div>}
+                        </label>
+
+                        <label className="block">
+                          <span className="mb-2 block text-sm font-medium text-slate-700">Category</span>
+                          <select
+                            name="type"
+                            value={formik.values.type}
+                            onChange={formik.handleChange}
+                            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-[#1e5eff] focus:bg-white"
+                          >
+                            <option value="">Select type</option>
+                            <option value="general">General</option>
+                            <option value="medical">Medical</option>
+                          </select>
+                          {formik.errors.type && <div className="mt-2 text-sm text-red-500">{formik.errors.type}</div>}
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="rounded-[24px] border border-slate-200 bg-white shadow-sm">
+                      <div className="border-b border-slate-200 px-6 py-4">
+                        <h3 className="text-lg font-semibold text-slate-900">Article Content</h3>
+                        <p className="mt-1 text-sm text-slate-500">
+                          Write the full article here. This content is what should appear in the details popup.
+                        </p>
+                      </div>
+                      <div className="px-6 py-6">
+                        <ReactQuill
+                          value={formik.values.content}
+                          onChange={(value) => formik.setFieldValue('content', value)}
+                          modules={modules}
+                          placeholder="Write something meaningful for the article body..."
+                          className="min-h-[320px]"
+                        />
+                        {formik.errors.content && <div className="mt-3 text-sm text-red-500">{formik.errors.content}</div>}
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              )}
+            </div>
+
+            <div className="border-t border-slate-200 bg-white px-6 py-4 sm:px-8">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="text-sm text-red-500">{submitError || ' '}</div>
+                <div className="flex items-center gap-3">
+                  <Dialog.Close asChild>
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-5 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                    >
+                      Cancel
+                    </button>
+                  </Dialog.Close>
+                  <Button
+                    type="submit"
+                    className="rounded-2xl bg-sidebar px-5 py-3"
+                    disabled={mutation.isPending}
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      <Save className="h-4 w-4" />
+                      {mutation.isPending ? 'Saving...' : 'Save Changes'}
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
 }

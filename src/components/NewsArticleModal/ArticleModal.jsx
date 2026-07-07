@@ -1,308 +1,235 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { cn } from '../../lib/utils';
-import { useSelector } from 'react-redux';
-import { Card, CardDescription, CardHeader, CardTitle } from '../../components/Card/Card';
-import { ArrowUp, ArrowUp01, Award, Book, CalendarClock, CalendarIcon, Flame, MapPinIcon, Target, Upload, X } from 'lucide-react';
-import { Separator } from '@radix-ui/react-dropdown-menu';
-import moment from 'moment';
-import avatar from "../../assets/avatar.jpg"
-import { Button } from '../Button/Button';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // import styles
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import {
+  BookOpen,
+  CalendarClock,
+  FileText,
+  ImageIcon,
+  UserRound,
+  X,
+} from 'lucide-react';
+import moment from 'moment';
+import avatar from "../../assets/avatar.jpg";
 
-const modules = {
-    toolbar: [
-        [{ 'header': '1' }, { 'header': '2' }, { font: ['serif', 'monospace', 'roboto', 'lobster'] }],
-        [{ size: ['small', 'medium', 'large', 'huge']}],
-        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-        [{ 'align': [] }],
-        [{ 'color': ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }, 
-        { 'background': ['#ffffff', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff'] }],
-        ['link'],
-        ['clean'] // Clear formatting
-    ]
-  };
-  
-  const formats = [
-    'header', 'font', 'size',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', // Ensure these are included
-    'indent',
-    'align', 'link',
-    'color', 'background',
-];
+function isValidUrl(string) {
+  try {
+    new URL(string);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function resolveArticleFromResponse(responseData, fallbackData) {
+  const candidates = [
+    responseData?.message?.newsArticle,
+    responseData?.message?.article,
+    responseData?.message?.data,
+    responseData?.message?.doc,
+    responseData?.data?.newsArticle,
+    responseData?.data?.article,
+    responseData?.data?.doc,
+    responseData?.data,
+    responseData?.message,
+    fallbackData,
+  ];
+
+  return candidates.find((candidate) => candidate && typeof candidate === 'object') || fallbackData;
+}
+
+function getArticleContent(article) {
+  return article?.description || article?.content || article?.body || article?.details || '';
+}
 
 export function ArticlesModal({ isOpen, onClose, data }) {
-    function isValidUrl(string) {
-        try {
-            new URL(string);
-            return true;
-        } catch (_) {
-            return false;
-        }
-    }
-
-    function resolveArticleFromResponse(responseData, fallbackData) {
-        const candidates = [
-            responseData?.message?.newsArticle,
-            responseData?.message?.article,
-            responseData?.message?.data,
-            responseData?.message?.doc,
-            responseData?.data?.newsArticle,
-            responseData?.data?.article,
-            responseData?.data?.doc,
-            responseData?.data,
-            responseData?.message,
-            fallbackData,
-        ];
-
-        return candidates.find((candidate) => candidate && typeof candidate === 'object') || fallbackData;
-    }
-
-    function getArticleContent(article) {
-        return article?.description || article?.content || article?.body || article?.details || '';
-    }
-
-    const { darkMode } = useSelector((state) => state.darkMode);
-    const { data: articleDetail } = useQuery({
-        queryKey: ['article-detail', data?._id],
-        enabled: Boolean(isOpen && data?._id),
-        queryFn: async () => {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/detail/${data?._id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to load article details');
-            }
-
-            return response.json();
+  const { data: articleDetail, isLoading } = useQuery({
+    queryKey: ['article-detail', data?._id],
+    enabled: Boolean(isOpen && data?._id),
+    queryFn: async () => {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/detail/${data?._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-    });
+      });
 
-    const articleData = useMemo(() => {
-        const detailedArticle = resolveArticleFromResponse(articleDetail, data);
-        const mergedArticle = detailedArticle ? { ...data, ...detailedArticle } : data;
+      if (!response.ok) {
+        throw new Error('Failed to load article details');
+      }
 
-        return {
-            ...mergedArticle,
-            title: mergedArticle?.title || mergedArticle?.name || '',
-            readTime: mergedArticle?.readTime || mergedArticle?.estimatedReadTime || '',
-            publishedTime: mergedArticle?.publishedTime || mergedArticle?.createdAt || '',
-            author: mergedArticle?.author || mergedArticle?.postedBy || mergedArticle?.createdBy?.email || mergedArticle?.createdBy?.name || 'Admin',
-            description: getArticleContent(mergedArticle),
-            profilePicture: mergedArticle?.profilePicture || mergedArticle?.media?.url || '',
-        };
-    }, [articleDetail, data]);
+      return response.json();
+    },
+  });
 
-    const profilePictureUrl = articleData?.profilePicture
-        ? isValidUrl(articleData?.profilePicture)
-            ? articleData?.profilePicture
-            : `${import.meta.env.VITE_APP_API_URL}/uploads/images/${articleData?.profilePicture}`
-        : avatar;
+  const articleData = useMemo(() => {
+    const resolvedArticle = resolveArticleFromResponse(articleDetail, data);
+    const mergedArticle = resolvedArticle ? { ...data, ...resolvedArticle } : data;
 
-    return (
-        <Dialog.Root open={isOpen} onOpenChange={onClose}>
-            <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-30" />
-            <Dialog.Content className={cn(
-                "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md",
-                "dark:bg-gray-800 dark:text-muted w-9/12"
-            )}>
+    return {
+      ...mergedArticle,
+      title: mergedArticle?.title || mergedArticle?.name || 'Untitled article',
+      readTime: mergedArticle?.readTime || mergedArticle?.estimatedReadTime || 'N/A',
+      publishedTime: mergedArticle?.publishedTime || mergedArticle?.createdAt || '',
+      author: mergedArticle?.author || mergedArticle?.postedBy || mergedArticle?.createdBy?.email || mergedArticle?.createdBy?.name || 'Admin',
+      description: getArticleContent(mergedArticle),
+      profilePicture: mergedArticle?.profilePicture || mergedArticle?.media?.url || '',
+      type: mergedArticle?.type || mergedArticle?.category || 'General',
+    };
+  }, [articleDetail, data]);
 
-                <Dialog.Description className="">
-                    <Card className="bg-[#f9f9f9] shadow-md rounded-[4px] ">
-                        <div className="flex">
-                            <div className="w-[200px] bg-white py-5 px-4 space-y-[6px] text-[13px] border-r border-gray-200">
-                                <h2 className="font-semibold text-[15px] mb-4">Content Details</h2>
-                                <div className="text-[#2d87f3] font-medium">Preview</div>
-                                {/* <div className="text-gray-600">Membership Status</div>
-                                <div className="text-gray-600">Payment History</div> */}
-                            </div>
-                            <div className="flex-1 p-5 relative">
-                                <button className="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-                                    <Dialog.Close asChild>
-                                        <button className={cn("rounded-full transition-colors p-1 duration-300 rounded-full bg-gray-100 dark:bg-gray-800 text-foreground", "dark:text-gray-100 dark:bg-gray-900 dark:hover:text-gray-100 dark:hover:bg-gray-400")}>
-                                            <X className="h-5 w-5" />
-                                        </button>
-                                    </Dialog.Close>
-                                </button>
-                                <div className="flex flex-col w-full items-start h-[500px] overflow-scroll overflow-x-hidden">
-                                    <div className="relative w-24 h-24">
-                                        <img
-                                            src={profilePictureUrl}
-                                            alt="Uploaded content"
-                                            className="w-full h-full object-cover rounded-lg"
-                                        />
-                                        <div className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-lg cursor-pointer">
-                                            <Upload className="w-4 h-4 text-[#75767F]" />
-                                        </div>
-                                    </div>
-                                    <div className='font-normal text-[#75767F] mt-2 text-[16px]'> Posted By: {articleData?.author} </div>
-                                    <div className='font-medium text-[#75767F] text-[20px]'>{articleData?.title}</div>
-                                    <div className='flex items-center justify-between w-full py-2'>
-                                        <div className=' flex items-center text-[#75767F] text-[16px]'> <span > <CalendarClock className='text-[16px]' /> </span> &nbsp; <span>Upload date:</span> </div>
-                                        <div> <span className='text-[#75767F] text-[16px]'> {moment(articleData?.publishedTime).format('MMM D, YYYY')} </span> </div>
-                                    </div>
-                                    <div className='flex items-center justify-between w-full'>
-                                        <div className=' flex items-center text-[#75767F] text-[16px]'> <span > <Book className='text-[16px]' /> </span> &nbsp; <span>Estimated read time:</span> </div>
-                                        <div> <span className='text-[#75767F] text-[16px]'>{articleData?.readTime} </span> </div>
-                                    </div>
+  const profilePictureUrl = articleData?.profilePicture
+    ? isValidUrl(articleData?.profilePicture)
+      ? articleData?.profilePicture
+      : `${import.meta.env.VITE_APP_API_URL}/uploads/images/${articleData?.profilePicture}`
+    : avatar;
 
-                                    {
-                                        articleData?.description?.includes('<')
-                                            ? <div className='w-full ql-editor' dangerouslySetInnerHTML={{ __html: articleData.description }} />
-                                            : <div className='w-full whitespace-pre-wrap text-[#75767F] text-[16px] leading-7 py-4'>{articleData?.description || 'No content available.'}</div>
-                                    }
+  const plainTextContent = articleData?.description
+    ? articleData.description.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+    : '';
 
-                                    {/* <div className='flex gap-28'>
-                                        <div>
-                                            <div className="w-full h-[2px] bg-blue-100 my-2 "></div>
-                                            <div> <span className='text-[#75767F] text-[16px]'>Attachments</span> </div>
-                                            <div className='leading-none'> <span className='font-medium text-[#75767F] text-[20px]'> Upload a photo, document or video here </span> </div>
-                                            <div className='flex gap-2'>
-                                                <div className="relative w-36 h-36">
-                                                    <img
-                                                        src={avatar}
-                                                        alt="Uploaded content"
-                                                        className="w-full h-full object-cover rounded-lg"
-                                                    />
-                                                    <div className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-lg cursor-pointer">
-                                                        <Upload className="w-4 h-4 text-[#75767F]" />
-                                                    </div>
-                                                </div>
-                                                <div className="relative w-36 h-36">
-                                                    <img
-                                                        src={avatar}
-                                                        alt="Uploaded content"
-                                                        className="w-full h-full object-cover rounded-lg"
-                                                    />
-                                                    <div className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-lg cursor-pointer">
-                                                        <Upload className="w-4 h-4 text-[#75767F]" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="w-full h-[2px] bg-blue-100 my-2 "></div>
-                                            <div> <span className='text-[#75767F] text-[16px]'>Tags :</span> </div>
-                                            <div> <span className='font-medium text-[#75767F] text-[20px]'> Choose a few tags that describes the content</span> </div>
-                                            <div className='flex gap-2 flex-wrap'>
-                                                <Button className="rounded-none border-slate-400 border bg-white">
-                                                    <span className='text-[#75767F]'>
-                                                        Nature
-                                                    </span>
-                                                </Button>
-                                                <Button className="rounded-none border-slate-400 border bg-white">
-                                                    <span className='text-[#75767F]'>
-                                                        Nature
-                                                    </span>
-                                                </Button>
-                                                <Button className="rounded-none border-slate-400 border bg-white">
-                                                    <span className='text-[#75767F]'>
-                                                        Nature
-                                                    </span>
-                                                </Button>
-                                                <Button className="rounded-none border-slate-400 border bg-white">
-                                                    <span className='text-[#75767F]'>
-                                                        Nature
-                                                    </span>
-                                                </Button>
-                                                <Button className="rounded-none border-slate-400 border bg-white">
-                                                    <span className='text-[#75767F]'>
-                                                        Nature
-                                                    </span>
-                                                </Button> <Button className="rounded-none border-slate-400 border bg-white">
-                                                    <span className='text-[#75767F]'>
-                                                        Nature
-                                                    </span>
-                                                </Button>
+  return (
+    <Dialog.Root open={isOpen} onOpenChange={onClose}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-sm" />
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 flex h-[88vh] w-[min(1120px,94vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[28px] bg-[#f7f4ee] shadow-[0_30px_120px_rgba(15,23,42,0.28)]">
+          <div className="hidden w-[280px] shrink-0 flex-col justify-between bg-[linear-gradient(180deg,#184e77_0%,#1f6f8b_48%,#76c893_100%)] p-8 text-white lg:flex">
+            <div>
+              <Dialog.Title className="text-[30px] font-semibold leading-tight">Content Details</Dialog.Title>
+              <p className="mt-3 text-sm leading-6 text-white/78">
+                Review the article content, metadata, and cover image in a cleaner reading layout.
+              </p>
+            </div>
 
-                                            </div>
-                                        </div>
-                                    </div> */}
-                                </div>
-                                {/* <div className="w-full h-[2px] bg-blue-100 my-2 "></div> */}
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
+                <div className="text-xs uppercase tracking-[0.22em] text-white/65">Category</div>
+                <div className="mt-2 text-lg font-medium capitalize">{articleData?.type}</div>
+              </div>
+              <div className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
+                <div className="text-xs uppercase tracking-[0.22em] text-white/65">Reading Snapshot</div>
+                <div className="mt-2 text-sm leading-6 text-white/82">
+                  {plainTextContent ? `${plainTextContent.slice(0, 140)}${plainTextContent.length > 140 ? '...' : ''}` : 'No content available yet.'}
+                </div>
+              </div>
+            </div>
+          </div>
 
-                                {/* <div className='flex items-center justify-between w-full'>
-                                    <div className=' flex items-center text-[#75767F] text-[16px]'><span>Details:</span> </div>
-                                </div> */}
-
-                                {/* <div className="text-editor">
-                                    <ReactQuill
-                                        value={data?.description}
-
-                                        modules={modules}
-                                        formats={formats}
-                                        placeholder="Write something awesome..."
-                                    />
-                                </div> */}
-
-                                {/* <div className="space-y-[10px] text-[13px]">
-                                    <div className="flex items-center">
-                                        <CalendarIcon className="w-[18px] h-[18px] mr-3 text-gray-400" />
-                                        <div className='flex items-center justify-between w-full'>
-                                            <div className="text-gray-500">Date Joined:</div>
-                                            <div className="mt-[2px]">{moment(data?.createdAt).format('MMM D, YYYY')}</div>
-                                        </div>
-                                    </div>
-                                    {
-                                        data?.dob && <div className="flex items-center">
-                                            <CalendarIcon className="w-[18px] h-[18px] mr-3 text-gray-400" />
-                                            <div className='flex items-center justify-between w-full'>
-                                                <div className="text-gray-500">Date of Birth:</div>
-                                                <div className="mt-[2px]">{moment(data?.dob).format('MM/DD/YYYY')}</div>
-                                            </div>
-                                        </div>
-
-                                    }
-
-                                    {
-                                        data?.country && <div className="flex items-center">
-                                            <MapPinIcon className="w-[18px] h-[18px] mr-3 text-gray-400" />
-                                            <div className='flex items-center justify-between w-full'>
-                                                <div className="text-gray-500">Location:</div>
-                                                <div className="mt-[2px]">{data?.country}</div>
-                                            </div>
-                                        </div>
-
-
-                                    }
-
-
-                                    <div className="w-full h-[2px] bg-blue-100 my-5 "></div>
-                                    <div className="flex items-center">
-                                        <Flame className="w-[18px] h-[18px] mr-3 text-gray-400" />
-                                        <div className='flex items-center justify-between w-full'>
-                                            <div className="text-gray-500">Streak:</div>
-                                            <div className="mt-[2px]">{data?.currentStreak}</div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <Target className="w-[18px] h-[18px] mr-3 text-gray-400" />
-                                        <div className='flex items-center justify-between w-full'>
-                                            <div className="text-gray-500">Number of goals achieved:</div>
-                                            <div className="mt-[2px]">52</div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <Award className="w-[18px] h-[18px] mr-3 text-gray-400" />
-                                        <div className='flex items-center justify-between w-full'>
-                                            <div className="text-gray-500">Total App points:</div>
-                                            <div className="mt-[2px]">192</div>
-                                        </div>
-                                    </div>
-                                </div> */}
-                            </div>
-                        </div>
-                    </Card>
+          <div className="flex min-w-0 flex-1 flex-col bg-[#fcfbf8]">
+            <div className="flex items-start justify-between border-b border-slate-200/80 px-6 py-5 sm:px-8">
+              <div className="min-w-0">
+                <Dialog.Title className="text-2xl font-semibold text-slate-900">Article Preview</Dialog.Title>
+                <Dialog.Description className="mt-1 text-sm text-slate-500">
+                  Full content view with metadata and cover image.
                 </Dialog.Description>
-            </Dialog.Content>
-        </Dialog.Root>
-    );
+              </div>
+              <Dialog.Close asChild>
+                <button
+                  type="button"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </Dialog.Close>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6 sm:px-8">
+              {isLoading ? (
+                <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center text-slate-500">
+                  Loading article details...
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
+                    <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
+                      <div className="aspect-[4/3] overflow-hidden bg-slate-100">
+                        <img
+                          src={profilePictureUrl}
+                          alt={articleData?.title}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div className="space-y-4 p-5">
+                        <div className="inline-flex items-center rounded-full bg-[#e7f1ff] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#1e5eff]">
+                          {articleData?.type}
+                        </div>
+                        <div className="space-y-3 text-sm text-slate-600">
+                          <div className="flex items-start gap-3">
+                            <UserRound className="mt-0.5 h-4 w-4 text-slate-400" />
+                            <div>
+                              <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Author</div>
+                              <div className="mt-1 font-medium text-slate-700">{articleData?.author}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-3">
+                            <CalendarClock className="mt-0.5 h-4 w-4 text-slate-400" />
+                            <div>
+                              <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Published</div>
+                              <div className="mt-1 font-medium text-slate-700">
+                                {articleData?.publishedTime ? moment(articleData.publishedTime).format('MMM D, YYYY') : 'N/A'}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-3">
+                            <BookOpen className="mt-0.5 h-4 w-4 text-slate-400" />
+                            <div>
+                              <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Read Time</div>
+                              <div className="mt-1 font-medium text-slate-700">{articleData?.readTime} min</div>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-3">
+                            <ImageIcon className="mt-0.5 h-4 w-4 text-slate-400" />
+                            <div>
+                              <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Cover</div>
+                              <div className="mt-1 font-medium text-slate-700">Primary article image</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-5">
+                      <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
+                        <div className="text-xs uppercase tracking-[0.22em] text-slate-400">Headline</div>
+                        <h2 className="mt-3 text-3xl font-semibold leading-tight text-slate-900">
+                          {articleData?.title}
+                        </h2>
+                      </div>
+
+                      <div className="rounded-[24px] border border-slate-200 bg-white shadow-sm">
+                        <div className="border-b border-slate-200 px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <FileText className="h-5 w-5 text-[#1e5eff]" />
+                            <h3 className="text-lg font-semibold text-slate-900">Article Body</h3>
+                          </div>
+                        </div>
+                        <div className="px-6 py-6">
+                          {articleData?.description ? (
+                            articleData.description.includes('<') ? (
+                              <div
+                                className="ql-editor min-h-[280px] max-w-none px-0 py-0 text-[16px] leading-8 text-slate-700"
+                                dangerouslySetInnerHTML={{ __html: articleData.description }}
+                              />
+                            ) : (
+                              <div className="min-h-[280px] whitespace-pre-wrap text-[16px] leading-8 text-slate-700">
+                                {articleData.description}
+                              </div>
+                            )
+                          ) : (
+                            <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center text-slate-500">
+                              No content available for this article yet.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
 }
