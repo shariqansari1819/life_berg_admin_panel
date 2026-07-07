@@ -39,7 +39,66 @@ function resolveArticleFromResponse(responseData, fallbackData) {
 }
 
 function getArticleContent(article) {
-  return article?.description || article?.content || article?.body || article?.details || '';
+  const directContent =
+    article?.description ||
+    article?.content ||
+    article?.body ||
+    article?.details ||
+    article?.detail ||
+    article?.articleBody ||
+    article?.htmlContent ||
+    article?.descriptionHtml ||
+    '';
+
+  if (directContent) {
+    return directContent;
+  }
+
+  const seen = new WeakSet();
+  const keyPriority = ['description', 'content', 'body', 'details', 'detail', 'html', 'text'];
+
+  function findNestedContent(value) {
+    if (!value) return '';
+
+    if (typeof value === 'string') {
+      const trimmedValue = value.trim();
+      if (trimmedValue.length > 40 || trimmedValue.includes('<p>') || trimmedValue.includes('<div>')) {
+        return trimmedValue;
+      }
+      return '';
+    }
+
+    if (typeof value !== 'object') {
+      return '';
+    }
+
+    if (seen.has(value)) {
+      return '';
+    }
+
+    seen.add(value);
+
+    for (const key of keyPriority) {
+      const match = Object.keys(value).find((objectKey) => objectKey.toLowerCase().includes(key));
+      if (match) {
+        const nestedResult = findNestedContent(value[match]);
+        if (nestedResult) {
+          return nestedResult;
+        }
+      }
+    }
+
+    for (const nestedValue of Object.values(value)) {
+      const nestedResult = findNestedContent(nestedValue);
+      if (nestedResult) {
+        return nestedResult;
+      }
+    }
+
+    return '';
+  }
+
+  return findNestedContent(article);
 }
 
 export function ArticlesModal({ isOpen, onClose, data }) {
@@ -93,7 +152,7 @@ export function ArticlesModal({ isOpen, onClose, data }) {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-sm" />
         <Dialog.Content className="fixed left-1/2 top-1/2 z-50 flex h-[88vh] w-[min(1120px,94vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[28px] bg-[#f7f4ee] shadow-[0_30px_120px_rgba(15,23,42,0.28)]">
-          <div className="hidden w-[280px] shrink-0 flex-col justify-between bg-[linear-gradient(180deg,#184e77_0%,#1f6f8b_48%,#76c893_100%)] p-8 text-white lg:flex">
+          <div className="hidden w-[280px] shrink-0 flex-col justify-between bg-sidebar p-8 text-white lg:flex">
             <div>
               <Dialog.Title className="text-[30px] font-semibold leading-tight">Content Details</Dialog.Title>
               <p className="mt-3 text-sm leading-6 text-white/78">
