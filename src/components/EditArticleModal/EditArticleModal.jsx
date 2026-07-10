@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { BookOpen, ImagePlus, PencilLine, Save, Tag, UserRound, X } from 'lucide-react';
+import { ImagePlus, PencilLine, Save, Tag, UserRound, X } from 'lucide-react';
 import avatar from "../../assets/avatar.jpg";
 import { Button } from '../Button/Button';
 
@@ -164,13 +164,8 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
       .max(30, 'Maximum read time is 30 minutes')
       .required('Estimated read time is required'),
     content: Yup.string().required('Content is required'),
-    image: Yup.mixed().test(
-      'image-required',
-      'Image is required',
-      (value) => value instanceof File || Boolean(articleData?.profilePicture)
-    ),
     type: Yup.string().required('Type is required'),
-  }), [articleData?.profilePicture]);
+  }), []);
 
   const mutation = useMutation({
     mutationFn: async (newArticle) => {
@@ -326,9 +321,6 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                           className="hidden"
                           onChange={handleImageChange}
                         />
-                        {formik.errors.image && !articleData?.profilePicture && (
-                          <div className="mt-3 text-sm text-red-500">{formik.errors.image}</div>
-                        )}
                       </div>
                     </div>
 
@@ -347,17 +339,6 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                           <div>
                             <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Order</div>
                             <div className="mt-1 font-medium text-slate-700">{articleData?.order}</div>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <BookOpen className="mt-0.5 h-4 w-4 text-slate-400" />
-                          <div>
-                            <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Preview</div>
-                            <div className="mt-1 font-medium text-slate-700">
-                              {formik.values.content
-                                ? `${formik.values.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120)}${formik.values.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().length > 120 ? '...' : ''}`
-                                : 'Start writing to see the preview.'}
-                            </div>
                           </div>
                         </div>
                       </div>
