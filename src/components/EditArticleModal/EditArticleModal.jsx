@@ -117,7 +117,6 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
   const [submitError, setSubmitError] = useState('');
   const fileInputRef = useRef(null);
   const queryClient = useQueryClient();
-  const articleAuthor = 'Hanh';
 
   const { data: articleDetail, isLoading } = useQuery({
     queryKey: ['article-detail-edit', propsData?._id],
@@ -148,17 +147,18 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
     return {
       ...mergedArticleData,
       title: mergedArticleData?.title || mergedArticleData?.name || '',
+      author: mergedArticleData?.author || mergedArticleData?.postedBy || mergedArticleData?.createdBy?.email || mergedArticleData?.createdBy?.name || '',
       readTime: mergedArticleData?.readTime || mergedArticleData?.estimatedReadTime || '',
       type: mergedArticleData?.type || mergedArticleData?.category || '',
       order: mergedArticleData?.order ?? 1,
       description: getArticleContent(mergedArticleData),
       profilePicture: mergedArticleData?.profilePicture || mergedArticleData?.media?.url || '',
-      author: articleAuthor,
     };
-  }, [articleDetail, propsData, articleAuthor]);
+  }, [articleDetail, propsData]);
 
   const validationSchema = useMemo(() => Yup.object().shape({
     title: Yup.string().required('Title is required'),
+    author: Yup.string().required('Author is required'),
     readTime: Yup.number()
       .min(1, 'Minimum read time is 1 minute')
       .max(30, 'Maximum read time is 30 minutes')
@@ -206,6 +206,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
   const formik = useFormik({
     initialValues: {
       title: articleData?.title || '',
+      author: articleData?.author || '',
       readTime: articleData?.readTime || '',
       content: articleData?.description || '',
       image: null,
@@ -230,7 +231,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
       formData.append('mediaType', 'image');
       formData.append('publishedTime', formattedDate);
       formData.append('type', values.type);
-      formData.append('author', articleAuthor);
+      formData.append('author', values.author);
       formData.append('order', String(articleData?.order ?? 1));
 
       if (values.image instanceof File) {
@@ -331,7 +332,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                           <UserRound className="mt-0.5 h-4 w-4 text-slate-400" />
                           <div>
                             <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Author</div>
-                            <div className="mt-1 font-medium text-slate-700">{articleData?.author}</div>
+                            <div className="mt-1 font-medium text-slate-700">{formik.values.author || 'Not set yet'}</div>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
@@ -352,7 +353,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                         <h3 className="text-lg font-semibold text-slate-900">Article Basics</h3>
                       </div>
 
-                      <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_180px_180px]">
+                      <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_180px_180px_180px]">
                         <label className="block">
                           <span className="mb-2 block text-sm font-medium text-slate-700">Title</span>
                           <input
@@ -364,6 +365,19 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                             className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-[#1e5eff] focus:bg-white"
                           />
                           {formik.errors.title && <div className="mt-2 text-sm text-red-500">{formik.errors.title}</div>}
+                        </label>
+
+                        <label className="block">
+                          <span className="mb-2 block text-sm font-medium text-slate-700">Author</span>
+                          <input
+                            type="text"
+                            name="author"
+                            value={formik.values.author}
+                            onChange={formik.handleChange}
+                            placeholder="Enter author name..."
+                            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-[#1e5eff] focus:bg-white"
+                          />
+                          {formik.errors.author && <div className="mt-2 text-sm text-red-500">{formik.errors.author}</div>}
                         </label>
 
                         <label className="block">

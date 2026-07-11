@@ -102,7 +102,6 @@ function getArticleContent(article) {
 }
 
 export function ArticlesModal({ isOpen, onClose, data }) {
-  const articleAuthor = 'Hanh';
   const { data: articleDetail, isLoading } = useQuery({
     queryKey: ['article-detail', data?._id],
     enabled: Boolean(isOpen && data?._id),
@@ -131,7 +130,7 @@ export function ArticlesModal({ isOpen, onClose, data }) {
       title: mergedArticle?.title || mergedArticle?.name || 'Untitled article',
       readTime: mergedArticle?.readTime || mergedArticle?.estimatedReadTime || 'N/A',
       publishedTime: mergedArticle?.publishedTime || mergedArticle?.createdAt || '',
-      author: articleAuthor,
+      author: mergedArticle?.author || mergedArticle?.postedBy || mergedArticle?.createdBy?.email || mergedArticle?.createdBy?.name || 'Admin',
       description: getArticleContent(mergedArticle),
       profilePicture: mergedArticle?.profilePicture || mergedArticle?.media?.url || '',
       type: mergedArticle?.type || mergedArticle?.category || 'General',
