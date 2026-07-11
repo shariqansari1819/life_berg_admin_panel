@@ -237,10 +237,6 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
       formData.append('author', values.author);
       formData.append('order', String(articleData?.order ?? 1));
 
-      if (articleData?.media?._id) {
-        formData.append('mediaId', articleData.media._id);
-      }
-
       if (values.image instanceof File) {
         formData.append('mediatype', 'image');
         formData.append('mediaType', 'image');
@@ -248,6 +244,10 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
       } else if (articleData?.profilePicture) {
         formData.append('mediatype', 'image');
         formData.append('mediaType', 'image');
+
+        if (articleData?.media?._id) {
+          formData.append('mediaId', articleData.media._id);
+        }
 
         if (isValidUrl(articleData.profilePicture)) {
           formData.append('profilePicture', articleData.profilePicture);
