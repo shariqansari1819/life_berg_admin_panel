@@ -237,12 +237,6 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
       formData.append('author', values.author);
       formData.append('order', String(articleData?.order ?? 1));
 
-      if (articleData?.profilePicture) {
-        formData.append('profilePicture', articleData.profilePicture);
-        formData.append('existingImage', articleData.profilePicture);
-        formData.append('existingMediaUrl', articleData.profilePicture);
-      }
-
       if (articleData?.media?._id) {
         formData.append('mediaId', articleData.media._id);
       }
@@ -254,6 +248,12 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
       } else if (articleData?.profilePicture) {
         formData.append('mediatype', 'image');
         formData.append('mediaType', 'image');
+
+        if (isValidUrl(articleData.profilePicture)) {
+          formData.append('profilePicture', articleData.profilePicture);
+          formData.append('existingImage', articleData.profilePicture);
+          formData.append('existingMediaUrl', articleData.profilePicture);
+        }
       }
 
       mutation.mutate(formData);
