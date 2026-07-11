@@ -227,14 +227,14 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
       formData.append('content', values.content);
       formData.append('body', values.content);
       formData.append('details', values.content);
-      formData.append('mediatype', 'image');
-      formData.append('mediaType', 'image');
       formData.append('publishedTime', formattedDate);
       formData.append('type', values.type);
       formData.append('author', values.author);
       formData.append('order', String(articleData?.order ?? 1));
 
       if (values.image instanceof File) {
+        formData.append('mediatype', 'image');
+        formData.append('mediaType', 'image');
         formData.append('file', values.image);
       }
 
