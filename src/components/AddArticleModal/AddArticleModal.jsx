@@ -144,7 +144,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 0 }) {
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-sm" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 flex h-[90vh] w-[min(1180px,96vw)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[28px] bg-[#fbfaf7] shadow-[0_30px_120px_rgba(15,23,42,0.28)]">
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 flex h-[92vh] w-[min(1180px,calc(100vw-1.5rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[28px] bg-[#fbfaf7] shadow-[0_30px_120px_rgba(15,23,42,0.28)]">
           <div className="flex items-start justify-between border-b border-slate-200 bg-white/80 px-6 py-5 backdrop-blur-sm sm:px-8">
             <div>
               <Dialog.Title className="text-2xl font-semibold text-slate-900">Create Article</Dialog.Title>
@@ -164,7 +164,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 0 }) {
 
           <form onSubmit={formik.handleSubmit} className="flex min-h-0 flex-1 flex-col">
             <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6 sm:px-8">
-              <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
+              <div className="grid gap-6 2xl:grid-cols-[320px_minmax(0,1fr)]">
                 <aside className="space-y-5">
                   <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
                     <div className="aspect-[4/3] overflow-hidden bg-slate-100">
@@ -217,15 +217,15 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 0 }) {
                   </div>
                 </aside>
 
-                <section className="space-y-5">
+                <section className="min-w-0 space-y-5">
                   <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
                     <div className="mb-5 flex items-center gap-3">
                       <PencilLine className="h-5 w-5 text-[#1e5eff]" />
                       <h3 className="text-lg font-semibold text-slate-900">Article Basics</h3>
                     </div>
 
-                    <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_180px_160px_180px_180px]">
-                      <label className="block">
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1.1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1fr)]">
+                      <label className="block min-w-0 sm:col-span-2 xl:col-span-3 2xl:col-span-1">
                         <span className="mb-2 block text-sm font-medium text-slate-700">Title</span>
                         <input
                           type="text"
@@ -238,7 +238,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 0 }) {
                         {formik.errors.title && formik.submitCount > 0 && <div className="mt-2 text-sm text-red-500">{formik.errors.title}</div>}
                       </label>
 
-                      <label className="block">
+                      <label className="block min-w-0 xl:col-span-2 2xl:col-span-1">
                         <span className="mb-2 block text-sm font-medium text-slate-700">Author</span>
                         <input
                           type="text"
@@ -251,7 +251,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 0 }) {
                         {formik.errors.author && formik.submitCount > 0 && <div className="mt-2 text-sm text-red-500">{formik.errors.author}</div>}
                       </label>
 
-                      <label className="block">
+                      <label className="block min-w-0">
                         <span className="mb-2 block text-sm font-medium text-slate-700">Read Time</span>
                         <input
                           type="number"
@@ -265,7 +265,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 0 }) {
                         {formik.errors.readTime && formik.submitCount > 0 && <div className="mt-2 text-sm text-red-500">{formik.errors.readTime}</div>}
                       </label>
 
-                      <label className="block">
+                      <label className="block min-w-0">
                         <span className="mb-2 block text-sm font-medium text-slate-700">Order</span>
                         <input
                           type="number"
@@ -278,7 +278,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 0 }) {
                         {formik.errors.order && formik.submitCount > 0 && <div className="mt-2 text-sm text-red-500">{formik.errors.order}</div>}
                       </label>
 
-                      <label className="block">
+                      <label className="block min-w-0">
                         <span className="mb-2 block text-sm font-medium text-slate-700">Category</span>
                         <select
                           name="type"
@@ -302,13 +302,13 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 0 }) {
                         Write the full article here. This content should appear in the details popup.
                       </p>
                     </div>
-                    <div className="px-6 py-6">
+                    <div className="min-w-0 px-6 py-6">
                       <ReactQuill
                         value={formik.values.content}
                         onChange={(value) => formik.setFieldValue('content', value)}
                         modules={modules}
                         placeholder="Write something meaningful for the article body..."
-                        className="min-h-[320px]"
+                        className="min-h-[320px] [&_.ql-container]:overflow-x-auto [&_.ql-toolbar]:overflow-x-auto [&_.ql-toolbar]:whitespace-nowrap"
                       />
                       {formik.errors.content && formik.submitCount > 0 && <div className="mt-3 text-sm text-red-500">{formik.errors.content}</div>}
                     </div>
@@ -327,7 +327,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 0 }) {
             <div className="border-t border-slate-200 bg-white px-6 py-4 sm:px-8">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="text-sm text-red-500">{submitError || ' '}</div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center justify-end gap-3">
                   <Dialog.Close asChild>
                     <button
                       type="button"
