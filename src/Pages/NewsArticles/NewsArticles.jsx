@@ -82,6 +82,14 @@ export function NewsArticles() {
     }
   }
 
+  function normalizeOrderValue(orderValue) {
+    const numericOrder = Number(orderValue);
+    if (!Number.isFinite(numericOrder) || numericOrder < 1) {
+      return 1;
+    }
+    return numericOrder;
+  }
+
 
   const columns = useMemo(
     () => [
@@ -369,7 +377,7 @@ export function NewsArticles() {
         readTime: article?.readTime || article?.estimatedReadTime,
         publishedTime: article?.publishedTime || article?.createdAt,
         author: article?.author || article?.postedBy || article?.createdBy?.email || article?.createdBy?.name,
-        order: article?.order,
+        order: normalizeOrderValue(article?.order),
         currentStreak: article?.currentStreak,
         profilePicture: article?.media?.url,
         subCategory: article?.subCategory?.name,

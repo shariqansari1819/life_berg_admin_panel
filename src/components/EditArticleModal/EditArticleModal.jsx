@@ -112,6 +112,14 @@ function getArticleContent(article) {
   return findNestedContent(article);
 }
 
+function normalizeOrderValue(orderValue) {
+  const numericOrder = Number(orderValue);
+  if (!Number.isFinite(numericOrder) || numericOrder < 1) {
+    return 1;
+  }
+  return numericOrder;
+}
+
 export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
   const [image, setImage] = useState(null);
   const [submitError, setSubmitError] = useState('');
@@ -150,7 +158,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
       author: mergedArticleData?.author || mergedArticleData?.postedBy || mergedArticleData?.createdBy?.email || mergedArticleData?.createdBy?.name || '',
       readTime: mergedArticleData?.readTime || mergedArticleData?.estimatedReadTime || '',
       type: mergedArticleData?.type || mergedArticleData?.category || '',
-      order: mergedArticleData?.order ?? 1,
+      order: normalizeOrderValue(mergedArticleData?.order),
       description: getArticleContent(mergedArticleData),
       media: mergedArticleData?.media || null,
       profilePicture: mergedArticleData?.profilePicture || mergedArticleData?.media?.url || '',
@@ -215,7 +223,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
     initialValues: {
       title: articleData?.title || '',
       author: articleData?.author || '',
-      order: articleData?.order ?? 1,
+      order: normalizeOrderValue(articleData?.order),
       readTime: articleData?.readTime || '',
       content: articleData?.description || '',
       image: null,
