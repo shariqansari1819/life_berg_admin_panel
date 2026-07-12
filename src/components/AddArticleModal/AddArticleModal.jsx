@@ -32,6 +32,9 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
     author: Yup.string().required('Author is required'),
+    order: Yup.number()
+      .min(1, 'Order must be at least 1')
+      .required('Order is required'),
     readTime: Yup.number()
       .min(1, 'Minimum read time is 1 minute')
       .max(30, 'Maximum read time is 30 minutes')
@@ -83,6 +86,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
     initialValues: {
       title: '',
       author: '',
+      order: nextOrder,
       readTime: '',
       content: '',
       image: null,
@@ -106,7 +110,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
       formData.append('publishedTime', formattedDate);
       formData.append('type', values.type);
       formData.append('author', values.author);
-      formData.append('order', String(nextOrder));
+      formData.append('order', String(values.order));
 
       mutation.mutate(formData);
     },
@@ -206,7 +210,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
                         <Tag className="mt-0.5 h-4 w-4 text-slate-400" />
                         <div>
                           <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Order</div>
-                          <div className="mt-1 font-medium text-slate-700">{nextOrder}</div>
+                          <div className="mt-1 font-medium text-slate-700">{formik.values.order || nextOrder}</div>
                         </div>
                       </div>
                     </div>
@@ -220,7 +224,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
                       <h3 className="text-lg font-semibold text-slate-900">Article Basics</h3>
                     </div>
 
-                    <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_180px_180px_180px]">
+                    <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_180px_160px_180px_180px]">
                       <label className="block">
                         <span className="mb-2 block text-sm font-medium text-slate-700">Title</span>
                         <input
@@ -259,6 +263,19 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
                           className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-[#1e5eff] focus:bg-white"
                         />
                         {formik.errors.readTime && formik.submitCount > 0 && <div className="mt-2 text-sm text-red-500">{formik.errors.readTime}</div>}
+                      </label>
+
+                      <label className="block">
+                        <span className="mb-2 block text-sm font-medium text-slate-700">Order</span>
+                        <input
+                          type="number"
+                          name="order"
+                          min="1"
+                          value={formik.values.order}
+                          onChange={formik.handleChange}
+                          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-[#1e5eff] focus:bg-white"
+                        />
+                        {formik.errors.order && formik.submitCount > 0 && <div className="mt-2 text-sm text-red-500">{formik.errors.order}</div>}
                       </label>
 
                       <label className="block">
