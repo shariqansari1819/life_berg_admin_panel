@@ -167,11 +167,11 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 0 }) {
               <div className="grid gap-6 2xl:grid-cols-[320px_minmax(0,1fr)]">
                 <aside className="space-y-5 2xl:max-w-[320px]">
                   <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
-                    <div className="mx-auto mt-5 h-[200px] w-[200px] overflow-hidden rounded-[24px] bg-slate-100">
+                    <div className="mx-auto mt-5 flex h-[200px] w-[200px] items-center justify-center overflow-hidden rounded-[24px] bg-slate-100 p-2">
                       <img
                         src={image || avatar}
                         alt="Article cover preview"
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-contain"
                       />
                     </div>
                     <div className="p-5">
