@@ -86,7 +86,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
     initialValues: {
       title: '',
       author: '',
-      order: nextOrder,
+      order: 1,
       readTime: '',
       content: '',
       image: null,
@@ -210,7 +210,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
                         <Tag className="mt-0.5 h-4 w-4 text-slate-400" />
                         <div>
                           <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Order</div>
-                          <div className="mt-1 font-medium text-slate-700">{formik.values.order || nextOrder}</div>
+                          <div className="mt-1 font-medium text-slate-700">{formik.values.order || 1}</div>
                         </div>
                       </div>
                     </div>

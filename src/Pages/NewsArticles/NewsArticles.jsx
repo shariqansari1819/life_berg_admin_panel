@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from '@tanstack/react-table';
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Input } from "../../components/Input/Input";
 import avatar from "../../assets/avatar.jpg"
 // import {
@@ -39,6 +39,7 @@ import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { NavLink, useNavigate } from 'react-router-dom';
 import { UserDetailsModal } from '../../components/user-detail-modal/UserDetails';
 import moment from 'moment';
+import { GripVertical } from 'lucide-react';
 import { ArticlesModal } from '../../components/NewsArticleModal/ArticleModal';
 import { AddArticlesModal } from '../../components/AddArticleModal/AddArticleModal';
 import { EditArticlesModal } from '../../components/EditArticleModal/EditArticleModal';
@@ -61,6 +62,8 @@ export function NewsArticles() {
   const [alertOpen, setAlertOpen] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [selectedEditArticle, setSelectedEditArticle] = useState(null);
+  const [orderedTableData, setOrderedTableData] = useState([]);
+  const [draggingArticleId, setDraggingArticleId] = useState(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -83,6 +86,17 @@ export function NewsArticles() {
   const columns = useMemo(
     () => [
 
+      {
+        id: 'order',
+        header: 'Order',
+        accessorKey: 'order',
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2 text-slate-600">
+            <GripVertical className="h-4 w-4 cursor-grab text-slate-400" />
+            <span className="font-medium">{row.original.order}</span>
+          </div>
+        ),
+      },
       {
         id: 'title',
         header: 'POSTNAME',
@@ -197,6 +211,36 @@ export function NewsArticles() {
     },
   });
 
+  const reorderArticleMutation = useMutation({
+    mutationFn: async ({ id, order }) => {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/order-article`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id, order }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData?.message || errorData?.error?.details?.MESSAGE || 'Failed to reorder article');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      setDraggingArticleId(null);
+      queryClient.invalidateQueries({ queryKey: ['articles'] });
+    },
+    onError: (error) => {
+      console.error('Error reordering article:', error.message);
+      setDraggingArticleId(null);
+      queryClient.invalidateQueries({ queryKey: ['articles'] });
+    },
+  });
+
 
   const updateUserMutation = useMutation({
     mutationFn: async (data) => {
@@ -287,7 +331,7 @@ export function NewsArticles() {
     queryKey: ['articles', currentPage, itemsPerPage],
     queryFn: async () => {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/all?page=${currentPage}&limit=${itemsPerPage}`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/news-article/all?page=${currentPage}&limit=${itemsPerPage}&order=1`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -341,6 +385,10 @@ export function NewsArticles() {
     return [];
   }, [data]);
 
+  useEffect(() => {
+    setOrderedTableData(tableData);
+  }, [tableData]);
+
   const totalEntries = data?.message?.newsArticles?.totalDocs || 0;
   const totalPages = data?.message?.newsArticles?.totalPages || 0;
 
@@ -349,7 +397,7 @@ export function NewsArticles() {
   const endEntry = Math.min(currentPage * itemsPerPage, totalEntries);
 
   const table = useReactTable({
-    data: tableData,
+    data: orderedTableData,
     columns: useMemo(() => [
       ...columns,
       // {
@@ -487,6 +535,42 @@ export function NewsArticles() {
 
   const paginationRange = getPaginationRange();
 
+  const handleDragStart = (articleId) => {
+    setDraggingArticleId(articleId);
+  };
+
+  const handleDrop = (targetArticle) => {
+    if (!draggingArticleId || draggingArticleId === targetArticle._id) {
+      setDraggingArticleId(null);
+      return;
+    }
+
+    const sourceArticle = orderedTableData.find((article) => article._id === draggingArticleId);
+
+    if (!sourceArticle) {
+      setDraggingArticleId(null);
+      return;
+    }
+
+    const sourceIndex = orderedTableData.findIndex((article) => article._id === draggingArticleId);
+    const targetIndex = orderedTableData.findIndex((article) => article._id === targetArticle._id);
+
+    if (sourceIndex === -1 || targetIndex === -1) {
+      setDraggingArticleId(null);
+      return;
+    }
+
+    const reorderedArticles = [...orderedTableData];
+    const [movedArticle] = reorderedArticles.splice(sourceIndex, 1);
+    reorderedArticles.splice(targetIndex, 0, movedArticle);
+    setOrderedTableData(reorderedArticles);
+
+    reorderArticleMutation.mutate({
+      id: draggingArticleId,
+      order: targetArticle.order,
+    });
+  };
+
   return (
     <div>
       <div className="flex justify-end items-center m-2  gap-2">
@@ -548,7 +632,14 @@ export function NewsArticles() {
           </TableHeader>
           <TableBody>
             {table?.getRowModel()?.rows?.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow
+                key={row.id}
+                draggable
+                onDragStart={() => handleDragStart(row.original._id)}
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={() => handleDrop(row.original)}
+                className={draggingArticleId === row.original._id ? "opacity-60" : ""}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
