@@ -84,8 +84,8 @@ export function NewsArticles() {
 
   function normalizeOrderValue(orderValue) {
     const numericOrder = Number(orderValue);
-    if (!Number.isFinite(numericOrder) || numericOrder < 1) {
-      return 1;
+    if (!Number.isFinite(numericOrder) || numericOrder < 0) {
+      return 0;
     }
     return numericOrder;
   }
@@ -724,7 +724,7 @@ export function NewsArticles() {
       <AddArticlesModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        nextOrder={totalEntries + 1}
+        nextOrder={0}
       // data={selectedArticle}
       // darkMode={darkMode}
       />

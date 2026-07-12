@@ -114,8 +114,8 @@ function getArticleContent(article) {
 
 function normalizeOrderValue(orderValue) {
   const numericOrder = Number(orderValue);
-  if (!Number.isFinite(numericOrder) || numericOrder < 1) {
-    return 1;
+  if (!Number.isFinite(numericOrder) || numericOrder < 0) {
+    return 0;
   }
   return numericOrder;
 }
@@ -169,7 +169,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
     title: Yup.string().required('Title is required'),
     author: Yup.string().required('Author is required'),
     order: Yup.number()
-      .min(1, 'Order must be at least 1')
+      .min(0, 'Order must be at least 0')
       .required('Order is required'),
     readTime: Yup.number()
       .min(1, 'Minimum read time is 1 minute')
@@ -369,7 +369,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                           <Tag className="mt-0.5 h-4 w-4 text-slate-400" />
                           <div>
                             <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Order</div>
-                            <div className="mt-1 font-medium text-slate-700">{formik.values.order || articleData?.order}</div>
+                            <div className="mt-1 font-medium text-slate-700">{formik.values.order ?? articleData?.order ?? 0}</div>
                           </div>
                         </div>
                       </div>
@@ -429,7 +429,7 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                           <input
                             type="number"
                             name="order"
-                            min="1"
+                            min="0"
                             value={formik.values.order}
                             onChange={formik.handleChange}
                             className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-[#1e5eff] focus:bg-white"

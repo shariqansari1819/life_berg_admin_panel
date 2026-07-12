@@ -23,7 +23,7 @@ const modules = {
   ],
 };
 
-export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
+export function AddArticlesModal({ isOpen, onClose, nextOrder = 0 }) {
   const [image, setImage] = useState(null);
   const [submitError, setSubmitError] = useState('');
   const fileInputRef = useRef(null);
@@ -33,7 +33,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
     title: Yup.string().required('Title is required'),
     author: Yup.string().required('Author is required'),
     order: Yup.number()
-      .min(1, 'Order must be at least 1')
+      .min(0, 'Order must be at least 0')
       .required('Order is required'),
     readTime: Yup.number()
       .min(1, 'Minimum read time is 1 minute')
@@ -86,7 +86,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
     initialValues: {
       title: '',
       author: '',
-      order: 1,
+      order: nextOrder,
       readTime: '',
       content: '',
       image: null,
@@ -134,7 +134,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
       setSubmitError('');
       formik.resetForm();
     }
-  }, [isOpen]);
+  }, [isOpen, formik]);
 
   const plainPreview = formik.values.content
     ? formik.values.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
@@ -210,7 +210,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
                         <Tag className="mt-0.5 h-4 w-4 text-slate-400" />
                         <div>
                           <div className="text-xs uppercase tracking-[0.18em] text-slate-400">Order</div>
-                          <div className="mt-1 font-medium text-slate-700">{formik.values.order || 1}</div>
+                          <div className="mt-1 font-medium text-slate-700">{formik.values.order ?? 0}</div>
                         </div>
                       </div>
                     </div>
@@ -270,7 +270,7 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 1 }) {
                         <input
                           type="number"
                           name="order"
-                          min="1"
+                          min="0"
                           value={formik.values.order}
                           onChange={formik.handleChange}
                           className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-[#1e5eff] focus:bg-white"
