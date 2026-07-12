@@ -327,9 +327,9 @@ export function EditArticlesModal({ isOpen, onClose, data: propsData }) {
                 </div>
               ) : (
                 <div className="grid gap-6 2xl:grid-cols-[320px_minmax(0,1fr)]">
-                  <aside className="space-y-5">
+                  <aside className="space-y-5 2xl:max-w-[320px]">
                     <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
-                      <div className="aspect-[4/3] overflow-hidden bg-slate-100">
+                      <div className="mx-auto mt-5 h-[200px] w-[200px] overflow-hidden rounded-[24px] bg-slate-100">
                         <img
                           src={image || profilePictureUrl}
                           alt={articleData?.title || 'Article cover'}

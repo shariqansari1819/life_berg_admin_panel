@@ -165,9 +165,9 @@ export function AddArticlesModal({ isOpen, onClose, nextOrder = 0 }) {
           <form onSubmit={formik.handleSubmit} className="flex min-h-0 flex-1 flex-col">
             <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6 sm:px-8">
               <div className="grid gap-6 2xl:grid-cols-[320px_minmax(0,1fr)]">
-                <aside className="space-y-5">
+                <aside className="space-y-5 2xl:max-w-[320px]">
                   <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
-                    <div className="aspect-[4/3] overflow-hidden bg-slate-100">
+                    <div className="mx-auto mt-5 h-[200px] w-[200px] overflow-hidden rounded-[24px] bg-slate-100">
                       <img
                         src={image || avatar}
                         alt="Article cover preview"
